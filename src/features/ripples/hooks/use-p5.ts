@@ -2,7 +2,9 @@ import "client-only";
 
 import p5 from "p5";
 import { useEffect, useRef } from "react";
+import { fetchResize } from "@/features/ripples/api";
 import { useSocket } from "@/features/ripples/hooks/use-socket";
+import { useDebounce } from "@/hooks";
 
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -24,6 +26,7 @@ export const useP5 = ({ id }: UseP5Props) => {
   const rippleRef = useRef<
     { x: number; y: number; radius: number; alpha: number }[]
   >([]);
+  const debounce = useDebounce(300);
 
   const { sendJsonMessage } = useSocket<Data>({
     id,
@@ -100,6 +103,13 @@ export const useP5 = ({ id }: UseP5Props) => {
 
         ripples.push(ripple);
       };
+
+      p5Instance.windowResized = () => {
+        debounce(async () => {
+          await fetchResize({ id, appName: "ripples" });
+        });
+        p5Instance.resizeCanvas(window.innerWidth, window.innerHeight);
+      };
     };
 
     // eslint-disable-next-line new-cap
@@ -111,7 +121,7 @@ export const useP5 = ({ id }: UseP5Props) => {
       if (!p5Ref.current) return;
       p5Ref.current.remove();
     };
-  }, [id, sendJsonMessage]);
+  }, [debounce, id, sendJsonMessage]);
 
   return {
     canvasRef,

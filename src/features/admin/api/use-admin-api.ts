@@ -38,6 +38,30 @@ export function useAdminAPI({ setNodes }: UseAdminAPIProps) {
         const { id } = data;
         setInteractionId(id);
       }
+
+      if (data.action === "resize") {
+        const { id, width, height } = data;
+
+        setNodes((nds) => {
+          const node = nds.find((nd) => nd.id === id);
+          if (!node) return nds;
+
+          const newNodes = nds.filter((nd) => nd.id !== id);
+
+          const newNode = {
+            ...node,
+            data: {
+              ...node.data,
+              width,
+              height,
+            },
+          };
+
+          return [...newNodes, newNode];
+        });
+
+        toast.success("端末のサイズが変更されました");
+      }
     },
     appName: "ripples",
   });

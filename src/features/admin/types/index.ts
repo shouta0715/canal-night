@@ -20,4 +20,15 @@ type LeaveAdminData = {
   id: string;
 };
 
-export type AdminData = JoinAdminData | LeaveAdminData | InteractionAdminData;
+type ResizeAdminData = {
+  action: "resize";
+  id: string;
+  width: number;
+  height: number;
+};
+
+export type AdminData =
+  | JoinAdminData
+  | LeaveAdminData
+  | InteractionAdminData
+  | ResizeAdminData;
