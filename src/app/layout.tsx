@@ -1,6 +1,8 @@
 import "@/styles/tailwind.css";
 import { Inter as FontSans } from "next/font/google";
 
+import { Toaster } from "sonner";
+import { ClientProvider } from "@/components/providers/idnex";
 import { cn } from "@/lib/utils";
 
 const fontSans = FontSans({
@@ -22,7 +24,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
           fontSans.variable
         )}
       >
-        {children}
+        <ClientProvider>{children}</ClientProvider>
+        <Toaster closeButton position="top-right" richColors />
       </body>
     </html>
   );
