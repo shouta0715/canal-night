@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import React from "react";
 
-const DynamicRipples = dynamic(() => import("@/components/ripples"), {
+const DynamicRipples = dynamic(() => import("@/features/ripples/components"), {
   ssr: false,
 });
 
