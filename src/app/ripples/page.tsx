@@ -2,8 +2,8 @@ import React from "react";
 import { registerActions } from "@/actions/register";
 import { Button } from "@/components/ui/button";
 
-export default function Page({ params }: { params: { "app-name": string } }) {
-  const action = registerActions.bind(null, params["app-name"]);
+export default function Page() {
+  const action = registerActions.bind(null, "ripples");
 
   return (
     <div className="container mx-auto p-4 text-center">
