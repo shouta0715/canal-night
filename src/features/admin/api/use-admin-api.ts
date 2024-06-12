@@ -6,7 +6,7 @@ import { fetchChangedPosition } from "@/features/admin/api";
 import { useAdminSocket } from "@/features/admin/hooks/use-admin-socket";
 import { interactionAtom } from "@/features/admin/store";
 import { AdminData, AdminNode } from "@/features/admin/types";
-import { getDefaultNode } from "@/features/ripples/utils";
+import { getDefaultNode } from "@/features/admin/utils";
 
 type UseAdminAPIProps = {
   setNodes: React.Dispatch<React.SetStateAction<Node<AdminNode>[]>>;

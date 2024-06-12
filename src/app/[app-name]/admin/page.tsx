@@ -1,8 +1,8 @@
 import React from "react";
 import { API_URL } from "@/constant";
 import { AdminFlow } from "@/features/admin/components";
-import { UserSession } from "@/features/ripples/types";
-import { sessionToNode } from "@/features/ripples/utils";
+import { UserSession } from "@/features/admin/types";
+import { sessionToNode } from "@/features/admin/utils";
 
 const getInitialSessions = async (appName: string): Promise<UserSession[]> => {
   const res = await fetch(`${API_URL}/${appName}/admin/sessions`, {

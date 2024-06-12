@@ -1,5 +1,3 @@
-import { UserSession } from "@/features/ripples/types";
-
 export interface AdminNode {
   label: string;
   width: number;
@@ -32,3 +30,18 @@ export type AdminData =
   | LeaveAdminData
   | InteractionAdminData
   | ResizeAdminData;
+
+type AssignedPosition = {
+  startWidth: number;
+  startHeight: number;
+  endWidth: number;
+  endHeight: number;
+};
+
+export type UserSession = {
+  role: "user";
+  width: number;
+  height: number;
+  assignPosition: AssignedPosition;
+  id: string;
+};

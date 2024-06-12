@@ -1,6 +1,5 @@
 import { Node } from "reactflow";
-import { AdminNode } from "@/features/admin/types";
-import { UserSession } from "@/features/ripples/types";
+import { AdminNode, UserSession } from "@/features/admin/types";
 
 export function sessionToNode(sessions: UserSession[]): Node<AdminNode>[] {
   const nodes: Node<AdminNode>[] = sessions.map((session) => {
