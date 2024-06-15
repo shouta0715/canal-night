@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
+import { useParams } from "next/navigation";
 import { Node } from "reactflow";
 import { toast } from "sonner";
 import { fetchChangedPosition } from "@/features/admin/api";
@@ -13,6 +14,8 @@ type UseAdminAPIProps = {
 };
 
 export function useAdminAPI({ setNodes }: UseAdminAPIProps) {
+  const params = useParams<{ "app-name": string }>();
+
   const setInteractionId = useSetAtom(interactionAtom);
 
   const { mutateAsync } = useMutation({
@@ -63,7 +66,7 @@ export function useAdminAPI({ setNodes }: UseAdminAPIProps) {
         toast.success("端末のサイズが変更されました");
       }
     },
-    appName: "ripples",
+    appName: params["app-name"],
   });
 
   return {

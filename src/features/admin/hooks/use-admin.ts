@@ -1,4 +1,4 @@
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
 import {
   Node,
@@ -18,6 +18,7 @@ export function useAdmin({ initialNodes }: UseAdminProps) {
   const [nodes, setNodes] = useState<Node<AdminNode>[]>(initialNodes);
   const lastPosition = useRef({ x: 0, y: 0 });
   const router = useRouter();
+  const params = useParams<{ "app-name": string }>();
 
   const { mutateAsync } = useAdminAPI({ setNodes });
 
@@ -34,7 +35,7 @@ export function useAdmin({ initialNodes }: UseAdminProps) {
 
         try {
           await mutateAsync({
-            appName: "ripples",
+            appName: params["app-name"],
             id,
             position,
           });
@@ -45,7 +46,7 @@ export function useAdmin({ initialNodes }: UseAdminProps) {
         }
       }
     },
-    [mutateAsync, router]
+    [mutateAsync, params, router]
   );
 
   const onNodesChange = useCallback(
