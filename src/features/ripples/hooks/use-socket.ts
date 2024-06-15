@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import useWebSocket from "react-use-websocket";
-import { API_URL } from "@/constant";
+import { WS_URL } from "@/constant";
 
 type UseSocketProps<T> = {
   callback: (data: T) => void;
@@ -16,7 +16,13 @@ export const useSocket = <T>({
   height,
 }: UseSocketProps<T>) => {
   const { lastJsonMessage, sendJsonMessage } = useWebSocket<T>(
-    `${API_URL}/ripples/${id}?width=${width}&height=${height}`
+    `${WS_URL}/ripples/${id}`,
+    {
+      queryParams: {
+        width,
+        height,
+      },
+    }
   );
 
   useEffect(() => {

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import useWebSocket from "react-use-websocket";
-import { API_URL } from "@/constant";
+import { WS_URL } from "@/constant";
 
 type UseAdminSocketProps<T> = {
   callback: (data: T) => void;
@@ -11,7 +11,7 @@ export function useAdminSocket<T>({
   appName,
 }: UseAdminSocketProps<T>) {
   const { lastJsonMessage, sendJsonMessage } = useWebSocket<T>(
-    `${API_URL}/${appName}/admin`
+    `${WS_URL}/${appName}/admin`
   );
 
   const callBackRef = useRef(callback);
