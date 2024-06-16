@@ -1,7 +1,7 @@
 import "client-only";
 
 import p5 from "p5";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 import { useDebounce, useSocket } from "@/hooks";
 import { fetchResize } from "@/utils";
@@ -19,6 +19,8 @@ type UseP5Props = {
   id: string;
 };
 
+const ballSpeed = 10;
+
 export const useP5 = ({ id }: UseP5Props) => {
   if (typeof window === "undefined") throw new Error("window is not defined");
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -27,15 +29,23 @@ export const useP5 = ({ id }: UseP5Props) => {
     { x: number; y: number; radius: number; alpha: number }[]
   >([]);
   const debounce = useDebounce(300);
+  const ballRef = useRef<{ x: number; y: number; vx: number; vy: number }>({
+    x: 0,
+    y: 0,
+    vx: ballSpeed,
+    vy: ballSpeed,
+  });
 
   const { sendJsonMessage } = useSocket<Data>({
     id,
     width,
     height,
-    appName: "ripples",
+    appName: "ripples-ping-pong",
     callback: (data) => {
       const p5Instance = p5Ref.current;
       if (!p5Instance) return;
+
+      if (data.senderId === id) return;
 
       const ripple = {
         ...data,
@@ -46,6 +56,47 @@ export const useP5 = ({ id }: UseP5Props) => {
       rippleRef.current.push(ripple);
     },
   });
+
+  const updateBallPosition = useCallback(() => {
+    if (!ballRef.current) return;
+
+    ballRef.current.x += ballRef.current.vx;
+    ballRef.current.y += ballRef.current.vy;
+
+    if (ballRef.current.x < 0 || ballRef.current.x > width) {
+      const position = {
+        x: ballRef.current.x,
+        y: ballRef.current.y,
+      };
+
+      const ripple = {
+        ...position,
+        radius: 0,
+        alpha: 255,
+      };
+      sendJsonMessage({ ...position, senderId: id });
+      rippleRef.current.push(ripple);
+
+      ballRef.current.vx *= -1;
+    }
+
+    if (ballRef.current.y < 0 || ballRef.current.y > height) {
+      const position = {
+        x: ballRef.current.x,
+        y: ballRef.current.y,
+      };
+
+      const ripple = {
+        ...position,
+        radius: 0,
+        alpha: 255,
+      };
+
+      sendJsonMessage({ ...position, senderId: id });
+      rippleRef.current.push(ripple);
+      ballRef.current.vy *= -1;
+    }
+  }, [id, sendJsonMessage]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -63,10 +114,10 @@ export const useP5 = ({ id }: UseP5Props) => {
 
       p5Instance.draw = () => {
         p5Instance.background(0);
-
         // eslint-disable-next-line no-plusplus
         for (let i = ripples.length - 1; i >= 0; i--) {
           const r = ripples[i];
+          p5Instance.noFill();
           p5Instance.stroke(77, 215, 227, r.alpha);
           p5Instance.strokeWeight(4);
           p5Instance.ellipse(r.x, r.y, r.radius * 10, r.radius * 10);
@@ -79,30 +130,11 @@ export const useP5 = ({ id }: UseP5Props) => {
             ripples.splice(i, 1);
           }
         }
-      };
 
-      p5Instance.mousePressed = () => {
-        const x = p5Instance.mouseX;
-        const y = p5Instance.mouseY;
-
-        if (x === 0 && y === 0) return;
-
-        const position = {
-          x: p5Instance.mouseX,
-          y: p5Instance.mouseY,
-        };
-
-        const ripple = {
-          ...position,
-          radius: 0,
-          alpha: 255,
-          blur: 0,
-        };
-
-        if (!id) throw new Error("id is required");
-        sendJsonMessage({ ...position, senderId: id });
-
-        ripples.push(ripple);
+        p5Instance.fill(255);
+        p5Instance.ellipse(ballRef.current.x, ballRef.current.y, 20, 20);
+        p5Instance.noFill();
+        updateBallPosition();
       };
 
       p5Instance.windowResized = () => {
@@ -122,7 +154,7 @@ export const useP5 = ({ id }: UseP5Props) => {
       if (!p5Ref.current) return;
       p5Ref.current.remove();
     };
-  }, [debounce, id, sendJsonMessage]);
+  }, [debounce, id, updateBallPosition]);
 
   return {
     canvasRef,
