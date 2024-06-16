@@ -2,9 +2,10 @@ import "client-only";
 
 import p5 from "p5";
 import { useEffect, useRef } from "react";
-import { fetchResize } from "@/features/ripples/api";
+
 import { useSocket } from "@/features/ripples/hooks/use-socket";
 import { useDebounce } from "@/hooks";
+import { fetchResize } from "@/utils";
 
 const width = window.innerWidth;
 const height = window.innerHeight;
