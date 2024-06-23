@@ -1,19 +1,21 @@
 "use client";
 
 import React, { createContext, useRef } from "react";
-import { Node } from "reactflow";
 import { NodeStore, createNodeStore } from "@/features/admin/store";
-import { AdminNode } from "@/features/admin/types";
+import { UserSession } from "@/features/admin/types";
 
 type RfProviderProps = {
   children: React.ReactNode;
-  initialNodes?: Node<AdminNode>[];
+  initialSession?: UserSession[];
 };
 
 const RFContext = createContext<NodeStore | null>(null);
 
-export function NodeProvider({ children, initialNodes = [] }: RfProviderProps) {
-  const store = useRef(createNodeStore(initialNodes)).current;
+export function NodeProvider({
+  children,
+  initialSession = [],
+}: RfProviderProps) {
+  const store = useRef(createNodeStore(initialSession)).current;
 
   return <RFContext.Provider value={store}>{children}</RFContext.Provider>;
 }

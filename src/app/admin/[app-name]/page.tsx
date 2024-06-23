@@ -3,7 +3,6 @@ import { API_URL } from "@/constant";
 import { AdminFlow } from "@/features/admin/components";
 import { NodeProvider } from "@/features/admin/components/providers";
 import { UserSession } from "@/features/admin/types";
-import { sessionToNode } from "@/features/admin/utils";
 
 const getInitialSessions = async (appName: string): Promise<UserSession[]> => {
   const res = await fetch(`${API_URL}/${appName}/admin/sessions`, {
@@ -25,8 +24,8 @@ export default async function Page({
 
   return (
     <div className="h-dvh w-screen">
-      <NodeProvider initialNodes={sessionToNode(sessions)}>
-        <AdminFlow sessions={sessions} />
+      <NodeProvider initialSession={sessions}>
+        <AdminFlow />
       </NodeProvider>
     </div>
   );
