@@ -1,15 +1,15 @@
 import { Node } from "reactflow";
-import { AdminNode, UserSession } from "@/features/admin/types";
+import { UserSession } from "@/features/admin/types";
 
-export function sessionToNode(sessions: UserSession[]): Node<AdminNode>[] {
-  const nodes: Node<AdminNode>[] = sessions.map((session) => {
-    const { id, width, height, assignPosition } = session;
+export function sessionToNode(sessions: UserSession[]): Node<UserSession>[] {
+  const nodes: Node<UserSession>[] = sessions.map((session) => {
+    const { id, width, height, assignPosition, displayname } = session;
     const { startHeight, startWidth } = assignPosition;
 
     return {
       id,
       type: "session",
-      data: { label: id, width, height },
+      data: { id, width, height, assignPosition, displayname },
       position: { x: startWidth, y: startHeight },
     };
   });
@@ -22,11 +22,12 @@ export function getDefaultNode({
   width,
   height,
   assignPosition,
-}: Omit<UserSession, "role">): Node<AdminNode> {
+  displayname,
+}: Omit<UserSession, "role">): Node<UserSession> {
   return {
     id,
     type: "session",
-    data: { label: id, width, height },
+    data: { id, width, height, assignPosition, displayname },
     position: { x: assignPosition.startWidth, y: assignPosition.startHeight },
   };
 }
