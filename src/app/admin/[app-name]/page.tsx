@@ -1,6 +1,7 @@
 import React from "react";
 import { API_URL } from "@/constant";
 import { AdminFlow } from "@/features/admin/components";
+import { NodeProvider } from "@/features/admin/components/providers";
 import { UserSession } from "@/features/admin/types";
 import { sessionToNode } from "@/features/admin/utils";
 
@@ -24,7 +25,9 @@ export default async function Page({
 
   return (
     <div className="h-dvh w-screen">
-      <AdminFlow initialNodes={sessionToNode(sessions)} />
+      <NodeProvider initialNodes={sessionToNode(sessions)}>
+        <AdminFlow sessions={sessions} />
+      </NodeProvider>
     </div>
   );
 }
