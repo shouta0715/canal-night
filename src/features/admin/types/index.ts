@@ -1,47 +1,63 @@
-export interface AdminNode {
-  label: string;
+export type UserSession = {
   width: number;
   height: number;
-}
+  assignPosition: AssignedPosition;
+  id: string;
+  displayname: string;
+};
+
 export type JoinAdminData = {
   action: "join";
 } & Omit<UserSession, "role">;
 
-type InteractionAdminData = {
+export type InteractionAdminData = {
   action: "interaction";
   id: string;
   position: { x: number; y: number };
 };
 
-type LeaveAdminData = {
+export type LeaveAdminData = {
   action: "leave";
   id: string;
 };
 
-type ResizeAdminData = {
+export type ChangePositionAdminData = {
+  action: "position";
+  id: string;
+  assignPosition: AssignedPosition;
+};
+
+export type ResizeAdminData = {
   action: "resize";
   id: string;
   width: number;
   height: number;
 };
 
+export type ChangeDeviceAdminData = {
+  x: number;
+  y: number;
+  action: "device";
+} & UserSession;
+
+export type ChangeDisplaynameAdminData = {
+  action: "displayname";
+  id: string;
+  displayname: string;
+};
+
 export type AdminData =
   | JoinAdminData
   | LeaveAdminData
   | InteractionAdminData
-  | ResizeAdminData;
+  | ResizeAdminData
+  | ChangeDeviceAdminData
+  | ChangePositionAdminData
+  | ChangeDisplaynameAdminData;
 
 type AssignedPosition = {
   startWidth: number;
   startHeight: number;
   endWidth: number;
   endHeight: number;
-};
-
-export type UserSession = {
-  role: "user";
-  width: number;
-  height: number;
-  assignPosition: AssignedPosition;
-  id: string;
 };
