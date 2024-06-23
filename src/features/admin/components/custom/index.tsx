@@ -1,3 +1,4 @@
+import { useSearchParams } from "next/navigation";
 import React from "react";
 import { NodeProps } from "reactflow";
 import { Monitor } from "@/features/admin/components/devices/monitor";
@@ -30,6 +31,8 @@ const getDevice = (width: number | undefined | null): keyof typeof devices => {
 };
 
 export function CustomSessionNode({ data, id }: NodeProps<AdminNode>) {
+  const searchParams = useSearchParams();
+  const node = searchParams.get("node") || "";
   const { width, height } = data;
 
   const Comp = devices[getDevice(width)];
@@ -41,7 +44,9 @@ export function CustomSessionNode({ data, id }: NodeProps<AdminNode>) {
         height: division(height) || 100,
       }}
     >
-      <Comp id={id}>{id}</Comp>
+      <Comp active={node === id} id={id}>
+        {id}
+      </Comp>
     </div>
   );
 }

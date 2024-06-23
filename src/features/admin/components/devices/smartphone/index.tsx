@@ -6,9 +6,11 @@ import { interactionAtom } from "@/features/admin/store";
 export function SmartPhone({
   children,
   id,
+  active,
 }: {
   children: React.ReactNode;
   id: string;
+  active: boolean;
 }) {
   const interactionId = useAtomValue(interactionAtom);
 
@@ -16,7 +18,8 @@ export function SmartPhone({
     <div
       className={clsx(
         "size-full rounded-[40px] border-[12px] bg-white/80 transition-[border-color] duration-300 ease-in-out",
-        interactionId === id ? "border-yellow-500" : "border-primary"
+        interactionId === id ? "border-yellow-500" : "border-primary",
+        active ? "border-pink-500" : ""
       )}
     >
       <div
