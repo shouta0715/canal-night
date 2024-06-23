@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { ChevronRight, Loader2 } from "lucide-react";
 import React from "react";
 import {
   AccordionButton,
@@ -46,8 +46,8 @@ export function PanelItem({ session, appName, active }: PanelItemProps) {
           active ? "bg-blue-100" : ""
         )}
       >
-        <AccordionButton className="shrink-0">
-          <ChevronDown size={16} />
+        <AccordionButton className="shrink-0 [&[data-state=open]>svg]:rotate-90">
+          <ChevronRight size={16} />
         </AccordionButton>
         <form action={action} className="flex-1">
           <input
@@ -63,7 +63,7 @@ export function PanelItem({ session, appName, active }: PanelItemProps) {
       >
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div className="flex flex-col gap-2">
-            <Label htmlFor={`${id}-width`}>Width</Label>
+            <Label htmlFor={`${id}-width`}>画面の幅（横幅）（px）</Label>
             <Input
               id={`${id}-width`}
               name="width"
@@ -74,7 +74,7 @@ export function PanelItem({ session, appName, active }: PanelItemProps) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor={`${id}-height`}>Height</Label>
+            <Label htmlFor={`${id}-height`}>画面の高さ（縦幅）（px）</Label>
             <Input
               id={`${id}-height`}
               name="height"
