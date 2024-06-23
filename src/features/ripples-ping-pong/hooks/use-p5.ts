@@ -139,7 +139,7 @@ export const useP5 = ({ id }: UseP5Props) => {
 
       p5Instance.windowResized = () => {
         debounce(async () => {
-          await fetchResize({ id, appName: "ripples" });
+          await fetchResize({ id, appName: "ripples-ping-pong" });
         });
         p5Instance.resizeCanvas(window.innerWidth, window.innerHeight);
       };
