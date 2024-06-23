@@ -4,7 +4,7 @@ import { NodeProps } from "reactflow";
 import { Monitor } from "@/features/admin/components/devices/monitor";
 import { SmartPhone } from "@/features/admin/components/devices/smartphone";
 import { Tablet } from "@/features/admin/components/devices/tablet";
-import { AdminNode } from "@/features/admin/types";
+import { UserSession } from "@/features/admin/types";
 
 // TODO:割る数を変更する
 const DIVISION_FACTOR = 1;
@@ -30,10 +30,10 @@ const getDevice = (width: number | undefined | null): keyof typeof devices => {
   return "monitor";
 };
 
-export function CustomSessionNode({ data, id }: NodeProps<AdminNode>) {
+export function CustomSessionNode({ data, id }: NodeProps<UserSession>) {
   const searchParams = useSearchParams();
   const node = searchParams.get("node") || "";
-  const { width, height } = data;
+  const { width, height, displayname } = data;
 
   const Comp = devices[getDevice(width)];
 
@@ -45,7 +45,9 @@ export function CustomSessionNode({ data, id }: NodeProps<AdminNode>) {
       }}
     >
       <Comp active={node === id} id={id}>
-        {id}
+        <p className="flex h-full items-center justify-center text-4xl font-bold">
+          {displayname}
+        </p>
       </Comp>
     </div>
   );
