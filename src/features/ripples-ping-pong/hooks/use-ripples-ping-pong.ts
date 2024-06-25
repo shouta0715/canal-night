@@ -3,8 +3,7 @@ import "client-only";
 import p5 from "p5";
 import { useCallback, useEffect, useRef } from "react";
 
-import { useDebounce, useSocket } from "@/hooks";
-import { fetchResize } from "@/utils";
+import { useP5 } from "@/hooks/use-p5";
 
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -21,14 +20,11 @@ type UseP5Props = {
 
 const ballSpeed = 10;
 
-export const useP5 = ({ id }: UseP5Props) => {
-  if (typeof window === "undefined") throw new Error("window is not defined");
-  const canvasRef = useRef<HTMLDivElement>(null);
-  const p5Ref = useRef<p5 | null>(null);
+export const useRipplesPingPong = ({ id }: UseP5Props) => {
   const rippleRef = useRef<
     { x: number; y: number; radius: number; alpha: number }[]
   >([]);
-  const debounce = useDebounce(300);
+
   const ballRef = useRef<{ x: number; y: number; vx: number; vy: number }>({
     x: 0,
     y: 0,
@@ -36,15 +32,8 @@ export const useP5 = ({ id }: UseP5Props) => {
     vy: ballSpeed,
   });
 
-  const { sendJsonMessage } = useSocket<Data>({
-    id,
-    width,
-    height,
-    appName: "ripples-ping-pong",
-    callback: (data) => {
-      const p5Instance = p5Ref.current;
-      if (!p5Instance) return;
-
+  const { sendJsonMessage, canvasRef, onResize, p5Ref } = useP5<Data>({
+    callback: (_, data) => {
       if (data.senderId === id) return;
 
       const ripple = {
@@ -55,6 +44,8 @@ export const useP5 = ({ id }: UseP5Props) => {
 
       rippleRef.current.push(ripple);
     },
+    id,
+    appName: "ripples-ping-pong",
   });
 
   const updateBallPosition = useCallback(() => {
@@ -137,12 +128,7 @@ export const useP5 = ({ id }: UseP5Props) => {
         updateBallPosition();
       };
 
-      p5Instance.windowResized = () => {
-        debounce(async () => {
-          await fetchResize({ id, appName: "ripples-ping-pong" });
-        });
-        p5Instance.resizeCanvas(window.innerWidth, window.innerHeight);
-      };
+      p5Instance.windowResized = () => onResize(p5Instance);
     };
 
     // eslint-disable-next-line new-cap
@@ -154,7 +140,7 @@ export const useP5 = ({ id }: UseP5Props) => {
       if (!p5Ref.current) return;
       p5Ref.current.remove();
     };
-  }, [debounce, id, updateBallPosition]);
+  }, [canvasRef, id, onResize, p5Ref, updateBallPosition]);
 
   return {
     canvasRef,

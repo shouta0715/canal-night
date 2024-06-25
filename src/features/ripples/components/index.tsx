@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { useP5 } from "@/features/ripples/hooks/use-p5";
+import { useRipples } from "@/features/ripples/hooks/use-ripples";
 
 function Ripples({ id }: { id: string }) {
-  const { canvasRef } = useP5({ id });
+  const { canvasRef } = useRipples({ id });
 
   return (
     <div>

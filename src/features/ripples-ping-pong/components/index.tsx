@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { useP5 } from "@/features/ripples-ping-pong/hooks/use-p5";
+import { useRipplesPingPong } from "@/features/ripples-ping-pong/hooks/use-ripples-ping-pong";
 
 function RipplesPingPong({ id }: { id: string }) {
-  const { canvasRef } = useP5({ id });
+  const { canvasRef } = useRipplesPingPong({ id });
 
   return (
     <div>

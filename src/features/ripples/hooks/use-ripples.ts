@@ -3,11 +3,7 @@ import "client-only";
 import p5 from "p5";
 import { useEffect, useRef } from "react";
 
-import { useDebounce, useSocket } from "@/hooks";
-import { fetchResize } from "@/utils";
-
-const width = window.innerWidth;
-const height = window.innerHeight;
+import { useP5 } from "@/hooks/use-p5";
 
 type Data = {
   x: number;
@@ -19,33 +15,25 @@ type UseP5Props = {
   id: string;
 };
 
-export const useP5 = ({ id }: UseP5Props) => {
-  if (typeof window === "undefined") throw new Error("window is not defined");
-  const canvasRef = useRef<HTMLDivElement>(null);
-  const p5Ref = useRef<p5 | null>(null);
+export const useRipples = ({ id }: UseP5Props) => {
   const rippleRef = useRef<
     { x: number; y: number; radius: number; alpha: number }[]
   >([]);
-  const debounce = useDebounce(300);
 
-  const { sendJsonMessage } = useSocket<Data>({
-    id,
-    width,
-    height,
-    appName: "ripples",
-    callback: (data) => {
-      const p5Instance = p5Ref.current;
-      if (!p5Instance) return;
+  const { onResize, sendJsonMessage, canvasRef, p5Ref, width, height } =
+    useP5<Data>({
+      callback: (_, data) => {
+        const ripple = {
+          ...data,
+          radius: 0,
+          alpha: 255,
+        };
 
-      const ripple = {
-        ...data,
-        radius: 0,
-        alpha: 255,
-      };
-
-      rippleRef.current.push(ripple);
-    },
-  });
+        rippleRef.current.push(ripple);
+      },
+      id,
+      appName: "ripples",
+    });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -105,12 +93,7 @@ export const useP5 = ({ id }: UseP5Props) => {
         ripples.push(ripple);
       };
 
-      p5Instance.windowResized = () => {
-        debounce(async () => {
-          await fetchResize({ id, appName: "ripples" });
-        });
-        p5Instance.resizeCanvas(window.innerWidth, window.innerHeight);
-      };
+      p5Instance.windowResized = () => onResize(p5Instance);
     };
 
     // eslint-disable-next-line new-cap
@@ -122,7 +105,7 @@ export const useP5 = ({ id }: UseP5Props) => {
       if (!p5Ref.current) return;
       p5Ref.current.remove();
     };
-  }, [debounce, id, sendJsonMessage]);
+  }, [canvasRef, height, id, onResize, p5Ref, sendJsonMessage, width]);
 
   return {
     canvasRef,
