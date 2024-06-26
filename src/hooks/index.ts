@@ -1,8 +1,12 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useRef, useEffect } from "react";
 import useWebSocket from "react-use-websocket";
 import { WS_URL } from "@/constant";
+import { changeMode } from "@/features/admin/api";
+import { Mode } from "@/features/admin/store";
 
 export function useDebounce(ms: number): (fn: () => void) => void {
   const timer = useRef<NodeJS.Timeout | null>(null);
@@ -50,4 +54,33 @@ export const useSocket = <T>({
   }, [callback, lastJsonMessage]);
 
   return { lastJsonMessage, sendJsonMessage };
+};
+
+export const useMode = (appName: string) => {
+  const searchParams = useSearchParams();
+  const mode = (searchParams.get("mode") || "view") as Mode;
+  const pathname = usePathname();
+  const debounce = useDebounce(300);
+
+  const { mutate } = useMutation({ mutationFn: changeMode });
+
+  const onChangeMode = (checked: boolean) => {
+    const newSearchParams = new URLSearchParams(searchParams);
+
+    newSearchParams.set("mode", checked ? "connect" : "view");
+
+    window.history.pushState(
+      {},
+      "",
+      `${pathname}?${newSearchParams.toString()}`
+    );
+
+    debounce(() => {
+      mutate({ appName, mode: checked ? "connect" : "view" });
+    });
+  };
+
+  const isConnectMode = mode === "connect";
+
+  return { mode, onChangeMode, isConnectMode };
 };

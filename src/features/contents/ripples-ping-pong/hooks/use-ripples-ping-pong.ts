@@ -4,6 +4,7 @@ import p5 from "p5";
 import { useCallback, useEffect, useRef } from "react";
 
 import { useP5 } from "@/hooks/use-p5";
+import { ContentProps } from "@/types";
 
 const width = window.innerWidth;
 const height = window.innerHeight;
@@ -14,13 +15,9 @@ type Data = {
   senderId: string;
 };
 
-type UseP5Props = {
-  id: string;
-};
-
 const ballSpeed = 10;
 
-export const useRipplesPingPong = ({ id }: UseP5Props) => {
+export const useRipplesPingPong = ({ id, initialMode }: ContentProps) => {
   const rippleRef = useRef<
     { x: number; y: number; radius: number; alpha: number }[]
   >([]);
@@ -32,7 +29,7 @@ export const useRipplesPingPong = ({ id }: UseP5Props) => {
     vy: ballSpeed,
   });
 
-  const { sendJsonMessage, canvasRef, onResize, p5Ref } = useP5<Data>({
+  const { sendJsonMessage, canvasRef, onResize, p5Ref, mode } = useP5<Data>({
     callback: (_, data) => {
       if (data.senderId === id) return;
 
@@ -46,6 +43,7 @@ export const useRipplesPingPong = ({ id }: UseP5Props) => {
     },
     id,
     appName: "ripples-ping-pong",
+    initialMode,
   });
 
   const updateBallPosition = useCallback(() => {
@@ -92,6 +90,7 @@ export const useRipplesPingPong = ({ id }: UseP5Props) => {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return () => {};
+    if (mode === "connect") return () => {};
 
     const sketch = (p: p5) => {
       const p5Instance = p;
@@ -140,7 +139,7 @@ export const useRipplesPingPong = ({ id }: UseP5Props) => {
       if (!p5Ref.current) return;
       p5Ref.current.remove();
     };
-  }, [canvasRef, id, onResize, p5Ref, updateBallPosition]);
+  }, [canvasRef, id, mode, onResize, p5Ref, updateBallPosition]);
 
   return {
     canvasRef,
