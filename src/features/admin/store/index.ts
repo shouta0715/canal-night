@@ -12,6 +12,8 @@ import { sessionToNode } from "@/features/admin/utils";
 
 export const interactionAtom = atomWithReset<string | null>(null);
 
+export type Mode = "view" | "connect";
+
 export type RFState = {
   nodes: Node<UserSession>[];
   onNodesChange: OnNodesChange;

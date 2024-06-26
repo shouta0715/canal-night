@@ -1,4 +1,5 @@
 import { API_URL } from "@/constant";
+import { Mode } from "@/features/admin/store";
 
 type FetchChangedPosition = {
   appName: string;
@@ -72,5 +73,25 @@ export const changeDeviceData = async ({
 
   if (!res.ok) {
     throw new Error("Failed to fetch resize");
+  }
+};
+
+export const changeMode = async ({
+  appName,
+  mode,
+}: {
+  appName: string;
+  mode: Mode;
+}) => {
+  const res = await fetch(`${API_URL}/${appName}/admin/mode`, {
+    method: "POST",
+    body: JSON.stringify({ mode }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch mode");
   }
 };
