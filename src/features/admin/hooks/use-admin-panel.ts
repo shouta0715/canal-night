@@ -1,4 +1,4 @@
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { useStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 import { useNodeStore } from "@/features/admin/components/providers";
@@ -17,8 +17,17 @@ export function useAdminPanel() {
 
   const searchParams = useSearchParams();
   const selectedNodeId = searchParams.get("node") || "";
+  const pathname = usePathname();
 
   const { onChangeMode, isConnectMode } = useMode(appName);
 
-  return { selectedNodeId, nodes, appName, onChangeMode, isConnectMode };
+  return {
+    selectedNodeId,
+    nodes,
+    appName,
+    onChangeMode,
+    isConnectMode,
+    searchParams,
+    pathname,
+  };
 }
