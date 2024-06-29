@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { ReadonlyURLSearchParams } from "next/navigation";
 import React, { useCallback, useId } from "react";
 import { changeNameActions } from "@/actions/cheange-name";
 
@@ -9,6 +10,8 @@ type PanelItemProps = {
   session: UserSession;
   appName: string;
   active: boolean;
+  searchParams: ReadonlyURLSearchParams;
+  pathname: string;
 };
 
 type Size = {
@@ -21,7 +24,13 @@ type Position = {
   y: number;
 };
 
-export function usePanelItem({ session, appName, active }: PanelItemProps) {
+export function usePanelItem({
+  session,
+  appName,
+  active,
+  searchParams,
+  pathname,
+}: PanelItemProps) {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: changeDeviceData,
   });
@@ -30,10 +39,14 @@ export function usePanelItem({ session, appName, active }: PanelItemProps) {
   const id = useId();
 
   const onClickHandler = useCallback(() => {
-    const url = `${window.location.pathname}?node=${session.id}`;
+    const newSearchParams = new URLSearchParams(searchParams);
+
+    newSearchParams.set("node", session.id);
+
+    const url = `${pathname}?${newSearchParams.toString()}`;
 
     window.history.replaceState({}, "", url);
-  }, [session.id]);
+  }, [pathname, searchParams, session.id]);
 
   const [size, setSize] = React.useState<Size>({
     width: session.width,
