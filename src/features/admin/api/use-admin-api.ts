@@ -45,8 +45,6 @@ export function useAdminAPI({ setNodes }: UseAdminAPIProps) {
   const onLeave = useCallback(
     (id: string) => {
       setNodes((nds) => nds.filter((nd) => nd.id !== id));
-
-      toast.error("端末が切断されました");
     },
     [setNodes]
   );
