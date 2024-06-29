@@ -1,4 +1,9 @@
-import { useParams, usePathname, useRouter } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 import { useCallback, useRef } from "react";
 import { Node, NodeChange, NodePositionChange } from "reactflow";
 import { toast } from "sonner";
@@ -26,6 +31,7 @@ export function useAdmin() {
   const router = useRouter();
   const params = useParams<{ "app-name": string }>();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const { mutateAsync } = useAdminAPI({ setNodes });
 
@@ -59,11 +65,14 @@ export function useAdmin() {
   const onNodeDragStart = useCallback(
     (_: React.MouseEvent, node: Node<UserSession>) => {
       const { id } = node;
+      const newSearchParams = new URLSearchParams(searchParams);
 
-      const url = `${pathname}?node=${id}`;
+      newSearchParams.set("node", id);
+
+      const url = `${pathname}?${newSearchParams.toString()}`;
       window.history.replaceState({}, "", url);
     },
-    [pathname]
+    [pathname, searchParams]
   );
 
   const onNodesChange = useCallback(
