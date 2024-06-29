@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronRight, Loader2 } from "lucide-react";
+import { ReadonlyURLSearchParams } from "next/navigation";
 import React from "react";
 import {
   AccordionButton,
@@ -20,6 +21,8 @@ type PanelItemProps = {
   appName: string;
   active: boolean;
   isConnectMode: boolean;
+  searchParams: ReadonlyURLSearchParams;
+  pathname: string;
 };
 
 export function PanelItem({
@@ -27,6 +30,8 @@ export function PanelItem({
   appName,
   active,
   isConnectMode,
+  searchParams,
+  pathname,
 }: PanelItemProps) {
   const {
     onClickHandler,
@@ -38,7 +43,7 @@ export function PanelItem({
     size,
     position,
     id,
-  } = usePanelItem({ session, appName, active });
+  } = usePanelItem({ session, appName, active, searchParams, pathname });
 
   return (
     <AccordionItem

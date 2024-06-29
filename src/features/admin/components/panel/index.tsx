@@ -16,8 +16,15 @@ const generateKey = (data: UserSession) => {
 };
 
 export function AdminPanel() {
-  const { selectedNodeId, nodes, appName, isConnectMode, onChangeMode } =
-    useAdminPanel();
+  const {
+    selectedNodeId,
+    nodes,
+    appName,
+    isConnectMode,
+    pathname,
+    searchParams,
+    onChangeMode,
+  } = useAdminPanel();
 
   return (
     <div className="flex flex-col p-4">
@@ -54,6 +61,8 @@ export function AdminPanel() {
               active={selectedNodeId === node.id}
               appName={appName}
               isConnectMode={isConnectMode}
+              pathname={pathname}
+              searchParams={searchParams}
               session={node.data}
             />
           );

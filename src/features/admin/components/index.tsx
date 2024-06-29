@@ -32,7 +32,7 @@ export const AdminFlow = () => {
         }}
       >
         <Rnd
-          className="h-full border-r-2 bg-background"
+          className="h-full overflow-scroll border-r-2 bg-background pb-28 "
           default={{
             x: 0,
             y: 0,
