@@ -29,6 +29,7 @@ export const getInitialMode = async (
 ): Promise<{ mode: Mode }> => {
   const res = await fetch(`${API_URL}/${appName}/mode`, {
     method: "GET",
+    cache: "no-cache",
   });
 
   if (!res.ok) {
