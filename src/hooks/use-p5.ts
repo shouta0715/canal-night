@@ -1,7 +1,7 @@
 import p5 from "p5";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import { Mode } from "@/features/admin/store";
-import { useDebounce, useSocket } from "@/hooks";
+import { useDebounce, useMode, useSocket } from "@/hooks";
 import { fetchResize } from "@/utils";
 
 type UseP5Props<T> = {
@@ -24,7 +24,8 @@ export function useP5<T extends Record<string, unknown>>({
   const canvasRef = useRef<HTMLDivElement>(null);
   const p5Ref = useRef<p5 | null>(null);
   const debounce = useDebounce(300);
-  const [mode, setMode] = useState<Mode>(initialMode);
+
+  const { onModeRedirect, mode } = useMode(appName, initialMode);
 
   const socket = useSocket<T>({
     id,
@@ -33,9 +34,7 @@ export function useP5<T extends Record<string, unknown>>({
     appName,
     callback: (data) => {
       if (data?.action === "mode" && data?.mode) {
-        setMode(data.mode as Mode);
-
-        return;
+        onModeRedirect(data.mode as Mode);
       }
       const p5Instance = p5Ref.current;
       if (!p5Instance) return;

@@ -44,6 +44,7 @@ export const useSocket = <T>({
         width,
         height,
       },
+      share: true,
     }
   );
 
@@ -56,13 +57,24 @@ export const useSocket = <T>({
   return { lastJsonMessage, sendJsonMessage };
 };
 
-export const useMode = (appName: string) => {
+export const useMode = (appName: string, initialMode: Mode = "view") => {
   const searchParams = useSearchParams();
-  const mode = (searchParams.get("mode") || "view") as Mode;
+  const mode = (searchParams.get("mode") || initialMode) as Mode;
   const pathname = usePathname();
   const debounce = useDebounce(300);
 
   const { mutate } = useMutation({ mutationFn: changeMode });
+
+  const onModeRedirect = (m: Mode) => {
+    const newSearchParams = new URLSearchParams(searchParams);
+
+    newSearchParams.set("mode", m);
+    window.history.pushState(
+      {},
+      "",
+      `${pathname}?${newSearchParams.toString()}`
+    );
+  };
 
   const onChangeMode = (checked: boolean) => {
     const newSearchParams = new URLSearchParams(searchParams);
@@ -82,5 +94,5 @@ export const useMode = (appName: string) => {
 
   const isConnectMode = mode === "connect";
 
-  return { mode, onChangeMode, isConnectMode };
+  return { mode, onChangeMode, isConnectMode, onModeRedirect };
 };
