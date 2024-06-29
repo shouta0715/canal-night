@@ -12,7 +12,7 @@ import { UserSession } from "@/features/admin/types";
 const generateKey = (data: UserSession) => {
   const { assignPosition, width, height } = data;
 
-  return `${data.id}-${assignPosition.startWidth}-${assignPosition.startHeight}-${width}-${height}`;
+  return `${data.id}-${assignPosition.startX}-${assignPosition.startY}-${width}-${height}`;
 };
 
 export function AdminPanel() {

@@ -56,8 +56,8 @@ export type AdminData =
   | ChangeDisplaynameAdminData;
 
 type AssignedPosition = {
-  startWidth: number;
-  startHeight: number;
-  endWidth: number;
-  endHeight: number;
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
 };

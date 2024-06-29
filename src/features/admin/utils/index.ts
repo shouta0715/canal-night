@@ -4,13 +4,13 @@ import { UserSession } from "@/features/admin/types";
 export function sessionToNode(sessions: UserSession[]): Node<UserSession>[] {
   const nodes: Node<UserSession>[] = sessions.map((session) => {
     const { id, width, height, assignPosition, displayname } = session;
-    const { startHeight, startWidth } = assignPosition;
+    const { startY, startX } = assignPosition;
 
     return {
       id,
       type: "session",
       data: { id, width, height, assignPosition, displayname },
-      position: { x: startWidth, y: startHeight },
+      position: { x: startX, y: startY },
     };
   });
 
@@ -28,6 +28,6 @@ export function getDefaultNode({
     id,
     type: "session",
     data: { id, width, height, assignPosition, displayname },
-    position: { x: assignPosition.startWidth, y: assignPosition.startHeight },
+    position: { x: assignPosition.startX, y: assignPosition.startY },
   };
 }

@@ -54,8 +54,8 @@ export function usePanelItem({
   });
 
   const [position, setPosition] = React.useState<Position>({
-    x: Number(session.assignPosition.startWidth.toFixed(0)),
-    y: Number(session.assignPosition.startHeight.toFixed(0)),
+    x: Number(session.assignPosition.startX.toFixed(0)),
+    y: Number(session.assignPosition.startY.toFixed(0)),
   });
 
   const handleSubmit = useCallback(
