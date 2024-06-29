@@ -4,6 +4,7 @@ import { NodeProps } from "reactflow";
 import { Monitor } from "@/features/admin/components/devices/monitor";
 import { SmartPhone } from "@/features/admin/components/devices/smartphone";
 import { Tablet } from "@/features/admin/components/devices/tablet";
+import { Mode } from "@/features/admin/store";
 import { UserSession } from "@/features/admin/types";
 
 // TODO:割る数を変更する
@@ -33,6 +34,7 @@ const getDevice = (width: number | undefined | null): keyof typeof devices => {
 export function CustomSessionNode({ data, id }: NodeProps<UserSession>) {
   const searchParams = useSearchParams();
   const node = searchParams.get("node") || "";
+  const mode = (searchParams.get("mode") || "view") as Mode;
   const { width, height, displayname } = data;
 
   const Comp = devices[getDevice(width)];
@@ -44,7 +46,7 @@ export function CustomSessionNode({ data, id }: NodeProps<UserSession>) {
         height: division(height) || 100,
       }}
     >
-      <Comp active={node === id} id={id}>
+      <Comp active={node === id} id={id} mode={mode}>
         <p className="flex h-full items-center justify-center text-4xl font-bold">
           {displayname}
         </p>

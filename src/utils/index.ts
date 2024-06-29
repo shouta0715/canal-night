@@ -1,4 +1,5 @@
 import { API_URL } from "@/constant";
+import { Mode } from "@/features/admin/store";
 
 export async function fetchResize({
   id,
@@ -22,3 +23,20 @@ export async function fetchResize({
     throw new Error("Failed to fetch resize");
   }
 }
+
+export const getInitialMode = async (
+  appName: string
+): Promise<{ mode: Mode }> => {
+  const res = await fetch(`${API_URL}/${appName}/mode`, {
+    method: "GET",
+    cache: "no-cache",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch initial mode");
+  }
+
+  const mode = await res.json();
+
+  return mode;
+};

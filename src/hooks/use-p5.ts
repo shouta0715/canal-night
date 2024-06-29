@@ -1,22 +1,31 @@
 import p5 from "p5";
 import { useCallback, useRef } from "react";
-import { useDebounce, useSocket } from "@/hooks";
+import { Mode } from "@/features/admin/store";
+import { useDebounce, useMode, useSocket } from "@/hooks";
 import { fetchResize } from "@/utils";
 
 type UseP5Props<T> = {
   id: string;
   appName: string;
   callback: (p: p5, data: T) => void;
+  initialMode: Mode;
 };
 
 const width = window.innerWidth;
 const height = window.innerHeight;
 
-export function useP5<T>({ id, callback, appName }: UseP5Props<T>) {
+export function useP5<T extends Record<string, unknown>>({
+  id,
+  callback,
+  appName,
+  initialMode,
+}: UseP5Props<T>) {
   if (typeof window === "undefined") throw new Error("window is not defined");
   const canvasRef = useRef<HTMLDivElement>(null);
   const p5Ref = useRef<p5 | null>(null);
   const debounce = useDebounce(300);
+
+  const { onModeRedirect, mode } = useMode(appName, initialMode);
 
   const socket = useSocket<T>({
     id,
@@ -24,6 +33,9 @@ export function useP5<T>({ id, callback, appName }: UseP5Props<T>) {
     height,
     appName,
     callback: (data) => {
+      if (data?.action === "mode" && data?.mode) {
+        onModeRedirect(data.mode as Mode);
+      }
       const p5Instance = p5Ref.current;
       if (!p5Instance) return;
       callback(p5Instance, data);
@@ -47,6 +59,7 @@ export function useP5<T>({ id, callback, appName }: UseP5Props<T>) {
     onResize,
     width,
     height,
+    mode,
     ...socket,
   };
 }

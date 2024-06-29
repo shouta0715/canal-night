@@ -4,6 +4,7 @@ import p5 from "p5";
 import { useEffect, useRef } from "react";
 
 import { useP5 } from "@/hooks/use-p5";
+import { ContentProps } from "@/types";
 
 type Data = {
   x: number;
@@ -11,16 +12,12 @@ type Data = {
   senderId: string;
 };
 
-type UseP5Props = {
-  id: string;
-};
-
-export const useRipples = ({ id }: UseP5Props) => {
+export const useRipples = ({ id, initialMode }: ContentProps) => {
   const rippleRef = useRef<
     { x: number; y: number; radius: number; alpha: number }[]
   >([]);
 
-  const { onResize, sendJsonMessage, canvasRef, p5Ref, width, height } =
+  const { onResize, sendJsonMessage, canvasRef, p5Ref, width, height, mode } =
     useP5<Data>({
       callback: (_, data) => {
         const ripple = {
@@ -33,11 +30,13 @@ export const useRipples = ({ id }: UseP5Props) => {
       },
       id,
       appName: "ripples",
+      initialMode,
     });
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return () => {};
+    if (mode === "connect") return () => {};
 
     const sketch = (p: p5) => {
       const p5Instance = p;
@@ -105,9 +104,10 @@ export const useRipples = ({ id }: UseP5Props) => {
       if (!p5Ref.current) return;
       p5Ref.current.remove();
     };
-  }, [canvasRef, height, id, onResize, p5Ref, sendJsonMessage, width]);
+  }, [canvasRef, height, id, mode, onResize, p5Ref, sendJsonMessage, width]);
 
   return {
     canvasRef,
+    mode,
   };
 };
