@@ -10,7 +10,6 @@ const DynamicRipples = dynamic(
 );
 export default async function Page({ params }: { params: { slug: string } }) {
   const { mode } = await getInitialMode("ripples");
-  console.log("mode", mode);
 
   return (
     <div>
