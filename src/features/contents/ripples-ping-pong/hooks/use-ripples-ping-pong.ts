@@ -81,7 +81,7 @@ export const useRipplesPingPong = ({ id, initialMode }: ContentProps) => {
         alpha: 255,
       };
 
-      sendJsonMessage({ ...position, senderId: id });
+      sendJsonMessage({ ...position, id });
       rippleRef.current.push(ripple);
       ballRef.current.vy *= -1;
     }
