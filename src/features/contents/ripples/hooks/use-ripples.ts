@@ -87,7 +87,7 @@ export const useRipples = ({ id, initialMode }: ContentProps) => {
         };
 
         if (!id) throw new Error("id is required");
-        sendJsonMessage({ ...position, senderId: id });
+        sendJsonMessage({ ...position, id });
 
         ripples.push(ripple);
       };
