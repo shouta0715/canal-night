@@ -33,7 +33,7 @@ export function DrawingCanvas({ setResult }: DrawingCanvasProps) {
   } = useDrawingCanvas({ setResult });
 
   return (
-    <div className="p-5">
+    <div>
       <div
         ref={parentRef}
         className="relative mx-auto size-72 overflow-hidden rounded-full border-2 md:size-96"
