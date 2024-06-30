@@ -2,13 +2,20 @@
 
 import React from "react";
 import { DrawingCanvas } from "@/features/contents/drawing/components/drawing-canvas";
+import { ResultCanvas } from "@/features/contents/drawing/components/result-canvas";
 import { useDrawing } from "@/features/contents/drawing/hooks";
 
 const DrawingApp: React.FC = () => {
-  const { setResult, result } = useDrawing();
+  const { onClear, setResult, result } = useDrawing();
 
   return (
-    <div>{result ? <div>a</div> : <DrawingCanvas setResult={setResult} />}</div>
+    <div className="p-5">
+      {result ? (
+        <ResultCanvas onClear={onClear} result={result} />
+      ) : (
+        <DrawingCanvas setResult={setResult} />
+      )}
+    </div>
   );
 };
 
