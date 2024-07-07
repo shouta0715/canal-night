@@ -18,43 +18,39 @@ export function useRiverBall({ data }: UseRiverBallProps) {
     h: window.innerHeight,
   });
 
-  const renderBall = useCallback(
-    (xx: number, yy: number, width: number, wheelSize: number, id?: string) => {
-      const { Bodies } = Matter;
+  const renderBall = useCallback((id?: string) => {
+    const { Bodies } = Matter;
+    // 150, 100, 150 * scale, 30 * scale,
+    const wheelBase = 20;
+    const wheelAOffset = -300 * 0.5 + wheelBase;
 
-      const wheelBase = 20;
-      const wheelAOffset = -width * 0.5 + wheelBase;
+    const wheelYOffset = 0;
 
-      const wheelYOffset = 0;
+    const scale = 0.35;
 
-      const ball = Bodies.circle(
-        xx + wheelAOffset,
-        yy + wheelYOffset,
-        wheelSize,
-        {
-          density: 0.0001, // 軽く設定
-          friction: 0.0001, // 転がり摩擦を適度に設定
-          frictionAir: 0.001, // 空気抵抗を適度に設定
-          restitution: 0.6, // 反発係数
-          render: {
-            strokeStyle: "#ffffff",
-            fillStyle: "#ffffff",
+    const ball = Bodies.circle(
+      150 + wheelAOffset,
+      100 + wheelYOffset,
+      150 * scale,
+      {
+        density: 0.0001, // 軽く設定
+        friction: 0.0001, // 転がり摩擦を適度に設定
+        frictionAir: 0.001, // 空気抵抗を適度に設定
+        restitution: 0.6, // 反発係数
+        render: {
+          sprite: id
+            ? {
+                texture: `${IMAGE_URL}/${id}`,
+                xScale: scale,
+                yScale: scale,
+              }
+            : undefined,
+        },
+      }
+    );
 
-            sprite: id
-              ? {
-                  texture: `${IMAGE_URL}/${id}`,
-                  xScale: 0.5,
-                  yScale: 0.5,
-                }
-              : undefined,
-          },
-        }
-      );
-
-      return ball;
-    },
-    []
-  );
+    return ball;
+  }, []);
 
   const renderWall = useCallback(
     (world: Matter.World) => {
@@ -79,8 +75,7 @@ export function useRiverBall({ data }: UseRiverBallProps) {
       if (!matterEngine.current) return;
       const { world } = matterEngine.current;
 
-      const scale = 0.9;
-      const ball = renderBall(150, 100, 150 * scale, 30 * scale, id);
+      const ball = renderBall(id);
 
       Matter.Body.setVelocity(ball, { x: 10, y: -5 });
 
