@@ -20,7 +20,7 @@ export function useRiverBall({ data }: UseRiverBallProps) {
 
   const renderBall = useCallback((id?: string) => {
     const { Bodies } = Matter;
-    // 150, 100, 150 * scale, 30 * scale,
+
     const wheelBase = 20;
     const wheelAOffset = -300 * 0.5 + wheelBase;
 
@@ -33,6 +33,7 @@ export function useRiverBall({ data }: UseRiverBallProps) {
       100 + wheelYOffset,
       150 * scale,
       {
+        label: "ball",
         density: 0.0001, // 軽く設定
         friction: 0.0001, // 転がり摩擦を適度に設定
         frictionAir: 0.001, // 空気抵抗を適度に設定
@@ -58,11 +59,9 @@ export function useRiverBall({ data }: UseRiverBallProps) {
 
       const left = Bodies.rectangle(0, h / 2, 40, h, {
         isStatic: true,
-        render: { fillStyle: "#060a19" },
       });
       const right = Bodies.rectangle(w, h / 2, 40, h, {
         isStatic: true,
-        render: { fillStyle: "#060a19" },
       });
 
       Composite.add(world, [left, right]);
@@ -111,8 +110,8 @@ export function useRiverBall({ data }: UseRiverBallProps) {
 
         return Bodies.rectangle(x, y, isLast ? w : width, recHeight, {
           isStatic: true,
+          label: "rect",
           angle: isLast ? 0 : angle,
-          render: { fillStyle: "#060a19" },
           density: 0.001, // ボールを軽く設定
           friction: 0.01, // 転がり摩擦を低く設定
           frictionAir: 0.01, // 空気抵抗を低く設定
@@ -152,7 +151,7 @@ export function useRiverBall({ data }: UseRiverBallProps) {
         width: w,
         height: h,
         wireframes: false,
-        background: "transparent",
+        background: "#000",
       },
     });
 
