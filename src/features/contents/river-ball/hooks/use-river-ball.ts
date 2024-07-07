@@ -1,7 +1,14 @@
 import Matter from "matter-js";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { RiverBallData } from "@/features/contents/river-ball/api/use-river-ball-api";
 
-export function useRiverBall() {
+const IMAGE_URL = "http://localhost:8787/river-ball/images";
+
+type UseRiverBallProps = {
+  data: RiverBallData | null;
+};
+
+export function useRiverBall({ data }: UseRiverBallProps) {
   const matterEngine = useRef<Matter.Engine | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const render = useRef<Matter.Render | null>(null);
@@ -12,7 +19,7 @@ export function useRiverBall() {
   });
 
   const renderBall = useCallback(
-    (xx: number, yy: number, width: number, wheelSize: number) => {
+    (xx: number, yy: number, width: number, wheelSize: number, id?: string) => {
       const { Bodies } = Matter;
 
       const wheelBase = 20;
@@ -29,9 +36,17 @@ export function useRiverBall() {
           friction: 0.0001, // 転がり摩擦を適度に設定
           frictionAir: 0.001, // 空気抵抗を適度に設定
           restitution: 0.6, // 反発係数
-
           render: {
-            fillStyle: "#ff0000",
+            strokeStyle: "#ffffff",
+            fillStyle: "#ffffff",
+
+            sprite: id
+              ? {
+                  texture: `${IMAGE_URL}/${id}`,
+                  xScale: 0.5,
+                  yScale: 0.5,
+                }
+              : undefined,
           },
         }
       );
@@ -59,19 +74,28 @@ export function useRiverBall() {
     [h, w]
   );
 
-  const addBallHandler = useCallback(() => {
-    if (!matterEngine.current) return;
-    const { world } = matterEngine.current;
+  const addBallHandler = useCallback(
+    (id?: string) => {
+      if (!matterEngine.current) return;
+      const { world } = matterEngine.current;
 
-    const scale = 0.9;
-    const ball = renderBall(150, 100, 150 * scale, 30 * scale);
+      const scale = 0.9;
+      const ball = renderBall(150, 100, 150 * scale, 30 * scale, id);
 
-    Matter.Body.setVelocity(ball, { x: 10, y: -5 });
+      Matter.Body.setVelocity(ball, { x: 10, y: -5 });
 
-    Matter.Body.setAngularVelocity(ball, 0.2);
+      Matter.Body.setAngularVelocity(ball, 0.2);
 
-    Matter.Composite.add(world, ball);
-  }, [renderBall]);
+      Matter.Composite.add(world, ball);
+    },
+    [renderBall]
+  );
+
+  useEffect(() => {
+    if (!data) return;
+
+    addBallHandler(data.id);
+  }, [addBallHandler, data]);
 
   const renderRectangles = useCallback(
     (world: Matter.World) => {
@@ -132,8 +156,8 @@ export function useRiverBall() {
       options: {
         width: w,
         height: h,
-        showAngleIndicator: true,
-        showCollisions: true,
+        wireframes: false,
+        background: "transparent",
       },
     });
 

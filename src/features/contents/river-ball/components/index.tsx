@@ -1,24 +1,21 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import React from "react";
-import { Button } from "@/components/ui/button";
-import { useRiverBall } from "@/features/contents/river-ball/hooks/use-river-ball";
+import { useRiverBallAPI } from "@/features/contents/river-ball/api/use-river-ball-api";
+import { RiverBallContents } from "@/features/contents/river-ball/components/river-ball-content";
 
-function RiverBall() {
-  const { ref, addBallHandler } = useRiverBall();
+export default function RiverBall() {
+  const params = useParams<{ slug: string }>();
+  const { lastJsonMessage } = useRiverBallAPI({
+    appName: "river-ball",
+    id: params.slug,
+    cb: () => {},
+  });
 
   return (
-    <div className="relative">
-      <Button
-        className="absolute left-1/2 top-10 -translate-x-1/2"
-        onClick={addBallHandler}
-        variant="outline"
-      >
-        ボールを追加
-      </Button>
-      <div ref={ref} />
+    <div>
+      <RiverBallContents data={lastJsonMessage} />
     </div>
   );
 }
-
-export default RiverBall;
