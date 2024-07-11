@@ -13,6 +13,7 @@ type Data = {
   x: number;
   y: number;
   senderId: string;
+  action: "position";
 };
 
 const ballSpeed = 10;
@@ -29,22 +30,25 @@ export const useRipplesPingPong = ({ id, initialMode }: ContentProps) => {
     vy: ballSpeed,
   });
 
-  const { sendJsonMessage, canvasRef, onResize, p5Ref, mode } = useP5<Data>({
-    callback: (_, data) => {
-      if (data.senderId === id) return;
+  const { sendJsonMessage, canvasRef, onResize, p5Ref, mode, isConnecting } =
+    useP5<Data>({
+      callback: (_, data) => {
+        if (data.action === "position") return;
 
-      const ripple = {
-        ...data,
-        radius: 0,
-        alpha: 255,
-      };
+        if (data.senderId === id) return;
 
-      rippleRef.current.push(ripple);
-    },
-    id,
-    appName: "ripples-ping-pong",
-    initialMode,
-  });
+        const ripple = {
+          ...data,
+          radius: 0,
+          alpha: 255,
+        };
+
+        rippleRef.current.push(ripple);
+      },
+      id,
+      appName: "ripples-ping-pong",
+      initialMode,
+    });
 
   const updateBallPosition = useCallback(() => {
     if (!ballRef.current) return;
@@ -143,5 +147,7 @@ export const useRipplesPingPong = ({ id, initialMode }: ContentProps) => {
 
   return {
     canvasRef,
+    isConnecting,
+    mode,
   };
 };
