@@ -28,3 +28,8 @@ export type ActionMode = {
   action: "mode";
   mode: Mode;
 };
+
+export type ActionImage = {
+  action: "uploaded";
+  id: string;
+};
