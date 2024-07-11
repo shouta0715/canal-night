@@ -1,20 +1,21 @@
 import { API_URL } from "@/constant";
 import { Mode } from "@/features/admin/store";
+import { Alignment } from "@/features/admin/types";
 
 type FetchChangedPosition = {
   appName: string;
   id: string;
-  position: { x: number; y: number };
+  body: { x: number; y: number; alignment: Alignment };
 };
 
 export const fetchChangedPosition = async ({
   appName,
   id,
-  position,
+  body,
 }: FetchChangedPosition) => {
   const res = await fetch(`${API_URL}/${appName}/admin/${id}/position`, {
     method: "POST",
-    body: JSON.stringify(position),
+    body: JSON.stringify(body),
     headers: {
       "Content-Type": "application/json",
     },

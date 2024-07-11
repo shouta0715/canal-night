@@ -35,7 +35,7 @@ export function CustomSessionNode({ data, id }: NodeProps<UserSession>) {
   const searchParams = useSearchParams();
   const node = searchParams.get("node") || "";
   const mode = (searchParams.get("mode") || "view") as Mode;
-  const { width, height, displayname } = data;
+  const { width, height, displayname, alignment } = data;
 
   const Comp = devices[getDevice(width)];
 
@@ -48,7 +48,10 @@ export function CustomSessionNode({ data, id }: NodeProps<UserSession>) {
     >
       <Comp active={node === id} id={id} mode={mode}>
         <p className="flex h-full items-center justify-center text-4xl font-bold">
+          {alignment.isLeft && "👈"}
           {displayname}
+
+          {alignment.isRight && "👉"}
         </p>
       </Comp>
     </div>
