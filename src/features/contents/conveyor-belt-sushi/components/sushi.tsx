@@ -7,9 +7,9 @@ import React, { useRef } from "react";
 import { API_URL } from "@/constant";
 
 type SushiProps = {
-  sushi: { id: string; x: number };
+  sushi: { id: string; x: number; dish: number };
   onAnimationComplete: (id: string) => void;
-  onOverWindow?: (id: string, position: number) => void;
+  onOverWindow?: (id: string, position: number, dish: number) => void;
 };
 
 export const Sushi = ({
@@ -20,6 +20,7 @@ export const Sushi = ({
   const x = useMotionValue(0);
   const ref = useRef<HTMLDivElement>(null);
   const once = useRef(false);
+  const dishNum = useRef(sushi.dish);
 
   useMotionValueEvent(x, "change", (latest) => {
     if (!ref.current || once.current) return;
@@ -28,7 +29,7 @@ export const Sushi = ({
     if (!isOver) return;
 
     once.current = true;
-    onOverWindow?.(sushi.id, latest);
+    onOverWindow?.(sushi.id, latest, dishNum.current);
   });
 
   return (
@@ -37,7 +38,7 @@ export const Sushi = ({
       animate={{
         x: window.innerWidth,
       }}
-      className="absolute -top-1/2 z-20 size-60 rounded-full"
+      className="absolute top-[-65%] z-20 size-60 rounded-full"
       initial={{
         x: sushi.x,
       }}
@@ -55,8 +56,13 @@ export const Sushi = ({
       <div className="relative size-full">
         <img
           alt="寿司"
-          className="absolute size-full"
+          className="absolute z-20 size-full"
           src={`${API_URL}/conveyor-belt-sushi/images/${sushi.id}`}
+        />
+        <img
+          alt="皿"
+          className="absolute top-32 z-10 size-full"
+          src={`/dish-${dishNum.current}.png`}
         />
       </div>
     </motion.div>

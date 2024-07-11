@@ -15,12 +15,13 @@ type Data =
       y: number;
       x: number;
       id: string;
-      data: { src: string };
+      data: { src: string; dish: number };
     };
 
 type Sushi = {
   id: string;
   x: number;
+  dish: number;
 };
 
 export function useConveyorBeltSushi({ id: slug, initialMode }: ContentProps) {
@@ -48,12 +49,16 @@ export function useConveyorBeltSushi({ id: slug, initialMode }: ContentProps) {
       if (data.action === "interaction") {
         if (data.id === slug) return;
         if (alignment.current.isLeft) return;
-        setSushi((p) => [...p, { id: data.data.src, x: data.x }]);
+        setSushi((p) => [
+          ...p,
+          { id: data.data.src, x: data.x, dish: data.data.dish },
+        ]);
       }
 
       if (data.action === "uploaded") {
         if (!alignment.current.isLeft) return;
-        setSushi((p) => [...p, { id: data.id, x: -300 }]);
+        const dish = Math.floor(Math.random() * 4) + 1;
+        setSushi((p) => [...p, { id: data.id, x: -300, dish }]);
       }
     },
     [onModeRedirect, slug]
@@ -71,10 +76,10 @@ export function useConveyorBeltSushi({ id: slug, initialMode }: ContentProps) {
     setSushi((p) => p.filter((su) => su.id !== id));
   };
 
-  const onOverWindow = (id: string, position: number) => {
+  const onOverWindow = (id: string, position: number, dish: number) => {
     if (alignment.current.isRight) return;
 
-    mutate({ id: slug, x: Math.round(position), data: { src: id } });
+    mutate({ id: slug, x: Math.round(position), data: { src: id, dish } });
   };
 
   return {

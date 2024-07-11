@@ -32,7 +32,7 @@ function ConveyorBeltSushi({ id, initialMode }: ContentProps) {
               key={sushiId.id}
               onAnimationComplete={onAnimateComplete}
               onOverWindow={onOverWindow}
-              sushi={sushiId}
+              sushi={{ id: sushiId.id, x: sushiId.x, dish: sushiId.dish }}
             />
           );
         })}

@@ -8,7 +8,7 @@ const onOver = async ({
 }: {
   id: string;
   x: number;
-  data: { src: string };
+  data: { src: string; dish: number };
 }) => {
   const res = await fetch(`${API_URL}/conveyor-belt-sushi/${id}/over`, {
     method: "POST",
