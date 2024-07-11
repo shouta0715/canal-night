@@ -15,3 +15,16 @@ export type UserState = {
   id: string;
   role: "user";
 };
+
+export type ActionPosition = {
+  action: "position";
+  x: number;
+  y: number;
+  alignment: Alignment;
+  assignPosition: AssignedPosition;
+};
+
+export type ActionMode = {
+  action: "mode";
+  mode: Mode;
+};
