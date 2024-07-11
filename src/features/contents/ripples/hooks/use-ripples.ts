@@ -18,22 +18,30 @@ export const useRipples = ({ id, initialMode }: ContentProps) => {
     { x: number; y: number; radius: number; alpha: number }[]
   >([]);
 
-  const { onResize, sendJsonMessage, canvasRef, p5Ref, width, height, mode } =
-    useP5<Data>({
-      callback: (_, data) => {
-        if (data.action === "position") return;
-        const ripple = {
-          ...data,
-          radius: 0,
-          alpha: 255,
-        };
+  const {
+    onResize,
+    sendJsonMessage,
+    canvasRef,
+    p5Ref,
+    width,
+    height,
+    mode,
+    isConnecting,
+  } = useP5<Data>({
+    callback: (_, data) => {
+      if (data.action === "position") return;
+      const ripple = {
+        ...data,
+        radius: 0,
+        alpha: 255,
+      };
 
-        rippleRef.current.push(ripple);
-      },
-      id,
-      appName: "ripples",
-      initialMode,
-    });
+      rippleRef.current.push(ripple);
+    },
+    id,
+    appName: "ripples",
+    initialMode,
+  });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -111,5 +119,6 @@ export const useRipples = ({ id, initialMode }: ContentProps) => {
   return {
     canvasRef,
     mode,
+    isConnecting,
   };
 };

@@ -30,24 +30,25 @@ export const useRipplesPingPong = ({ id, initialMode }: ContentProps) => {
     vy: ballSpeed,
   });
 
-  const { sendJsonMessage, canvasRef, onResize, p5Ref, mode } = useP5<Data>({
-    callback: (_, data) => {
-      if (data.action === "position") return;
+  const { sendJsonMessage, canvasRef, onResize, p5Ref, mode, isConnecting } =
+    useP5<Data>({
+      callback: (_, data) => {
+        if (data.action === "position") return;
 
-      if (data.senderId === id) return;
+        if (data.senderId === id) return;
 
-      const ripple = {
-        ...data,
-        radius: 0,
-        alpha: 255,
-      };
+        const ripple = {
+          ...data,
+          radius: 0,
+          alpha: 255,
+        };
 
-      rippleRef.current.push(ripple);
-    },
-    id,
-    appName: "ripples-ping-pong",
-    initialMode,
-  });
+        rippleRef.current.push(ripple);
+      },
+      id,
+      appName: "ripples-ping-pong",
+      initialMode,
+    });
 
   const updateBallPosition = useCallback(() => {
     if (!ballRef.current) return;
@@ -146,5 +147,7 @@ export const useRipplesPingPong = ({ id, initialMode }: ContentProps) => {
 
   return {
     canvasRef,
+    isConnecting,
+    mode,
   };
 };
