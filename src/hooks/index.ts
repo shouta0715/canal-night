@@ -37,6 +37,7 @@ export const useSocket = <T>({
   height,
   appName,
 }: UseSocketProps<T>) => {
+  const callbackRef = useRef(callback);
   const { lastJsonMessage, sendJsonMessage, readyState } = useWebSocket<T>(
     `${WS_URL}/${appName}/${id}`,
     {
@@ -53,8 +54,8 @@ export const useSocket = <T>({
   useEffect(() => {
     if (!lastJsonMessage) return;
 
-    callback(lastJsonMessage);
-  }, [callback, lastJsonMessage]);
+    callbackRef.current(lastJsonMessage);
+  }, [lastJsonMessage]);
 
   return { lastJsonMessage, sendJsonMessage, isConnecting };
 };
