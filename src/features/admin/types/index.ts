@@ -1,9 +1,14 @@
+export type Alignment = {
+  isLeft: boolean;
+  isRight: boolean;
+};
 export type UserSession = {
   width: number;
   height: number;
   assignPosition: AssignedPosition;
   id: string;
   displayname: string;
+  alignment: Alignment;
 };
 
 export type JoinAdminData = {
@@ -25,6 +30,7 @@ export type ChangePositionAdminData = {
   action: "position";
   id: string;
   assignPosition: AssignedPosition;
+  alignment: Alignment;
 };
 
 export type ResizeAdminData = {
@@ -55,7 +61,7 @@ export type AdminData =
   | ChangePositionAdminData
   | ChangeDisplaynameAdminData;
 
-type AssignedPosition = {
+export type AssignedPosition = {
   startX: number;
   startY: number;
   endX: number;
