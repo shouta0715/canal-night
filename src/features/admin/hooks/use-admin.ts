@@ -13,6 +13,7 @@ import { useAdminAPI } from "@/features/admin/api/use-admin-api";
 import { useNodeStore } from "@/features/admin/components/providers";
 import { RFState } from "@/features/admin/store";
 import { UserSession } from "@/features/admin/types";
+import { calculateAlignment } from "@/features/admin/utils/calculate-position";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -28,6 +29,7 @@ export function useAdmin() {
     useShallow(selector)
   );
   const lastPosition = useRef({ x: 0, y: 0 });
+  const positionChanged = useRef(false);
   const router = useRouter();
   const params = useParams<{ "app-name": string }>();
   const pathname = usePathname();
@@ -36,22 +38,49 @@ export function useAdmin() {
   const { mutateAsync } = useAdminAPI({ setNodes });
 
   const onPositionChange = useCallback(
-    async (change: NodePositionChange, _: Node<UserSession>[]) => {
+    async (change: NodePositionChange, ns: Node<UserSession>[]) => {
       if (change.dragging === true) {
         lastPosition.current = change.position || { x: 0, y: 0 };
+        positionChanged.current = true;
       }
 
       if (change.dragging === false) {
         const { id } = change;
-        const position = lastPosition.current;
-        if (!position) return;
+        const { x, y } = lastPosition.current;
+
+        if (!positionChanged.current) return;
+
+        const {
+          isLeft,
+          isRight,
+          nodes: changedNodes,
+        } = calculateAlignment({ nodes: ns, x, y, id });
+
+        const body = { x, y, alignment: { isLeft, isRight } };
 
         try {
-          await mutateAsync({
-            appName: params["app-name"],
-            id,
-            position,
+          const promises = changedNodes.map((node) => {
+            return mutateAsync({
+              appName: params["app-name"],
+              id: node.id,
+              body: {
+                x: node.position.x,
+                y: node.position.y,
+                alignment: { ...node.data.alignment },
+              },
+            });
           });
+
+          await Promise.all([
+            ...promises,
+            mutateAsync({
+              appName: params["app-name"],
+              id,
+              body,
+            }),
+          ]);
+
+          positionChanged.current = false;
 
           router.refresh();
         } catch (error) {
