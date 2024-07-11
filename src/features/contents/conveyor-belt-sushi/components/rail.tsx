@@ -7,13 +7,12 @@ import Marquee from "react-fast-marquee";
 export const Rail = () => {
   return (
     <div className="relative mt-auto h-96 overflow-hidden">
-      <div className="absolute top-40 w-screen">
+      <div className="absolute top-40 h-56 w-screen">
         <Image
           alt="回転寿司のレール"
-          className="size-full object-cover"
-          height={1080}
-          src="/rail-bg.jpg"
-          width={1920}
+          className="w-full"
+          fill
+          src="/rail-bg.png"
         />
       </div>
 
