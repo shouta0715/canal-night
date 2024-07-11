@@ -148,6 +148,7 @@ export function useAdminAPI({ setNodes }: UseAdminAPIProps) {
           data: {
             ...node.data,
             assignPosition: data.assignPosition,
+            alignment: data.alignment,
           },
         };
 
