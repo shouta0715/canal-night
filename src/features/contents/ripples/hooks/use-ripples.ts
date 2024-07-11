@@ -10,6 +10,7 @@ type Data = {
   x: number;
   y: number;
   senderId: string;
+  action: "position";
 };
 
 export const useRipples = ({ id, initialMode }: ContentProps) => {
@@ -20,6 +21,7 @@ export const useRipples = ({ id, initialMode }: ContentProps) => {
   const { onResize, sendJsonMessage, canvasRef, p5Ref, width, height, mode } =
     useP5<Data>({
       callback: (_, data) => {
+        if (data.action === "position") return;
         const ripple = {
           ...data,
           radius: 0,

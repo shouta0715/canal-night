@@ -13,6 +13,7 @@ type Data = {
   x: number;
   y: number;
   senderId: string;
+  action: "position";
 };
 
 const ballSpeed = 10;
@@ -31,6 +32,8 @@ export const useRipplesPingPong = ({ id, initialMode }: ContentProps) => {
 
   const { sendJsonMessage, canvasRef, onResize, p5Ref, mode } = useP5<Data>({
     callback: (_, data) => {
+      if (data.action === "position") return;
+
       if (data.senderId === id) return;
 
       const ripple = {
