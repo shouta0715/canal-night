@@ -76,8 +76,6 @@ export function useAdminAPI({ setNodes }: UseAdminAPIProps) {
 
         return [...newNodes, newNode];
       });
-
-      toast.success("端末のサイズが変更されました");
     },
     [setNodes]
   );
