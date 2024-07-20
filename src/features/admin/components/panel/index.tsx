@@ -27,7 +27,7 @@ export function AdminPanel() {
   } = useAdminPanel();
 
   return (
-    <div className="flex flex-col p-4">
+    <div className="flex h-full flex-col overflow-auto p-4 pb-28">
       <div className="flex">
         <p
           className={clsx(
