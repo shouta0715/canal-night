@@ -59,11 +59,12 @@ export function useAdminAPI({ setNodes }: UseAdminAPIProps) {
   const onResize = useCallback(
     (data: ResizeAdminData) => {
       const { id, width, height } = data;
-      setNodes((nds) => {
-        const node = nds.find((nd) => nd.id === id);
-        if (!node) return nds;
+      setNodes((prev) => {
+        const targetNodeIndex = prev.findIndex((n) => n.id === data.id);
+        const node = prev[targetNodeIndex];
+        if (!node) return prev;
 
-        const newNodes = nds.filter((nd) => nd.id !== id);
+        const newNodes = prev.filter((nd) => nd.id !== id);
 
         const newNode = {
           ...node,
@@ -74,10 +75,10 @@ export function useAdminAPI({ setNodes }: UseAdminAPIProps) {
           },
         };
 
-        return [...newNodes, newNode];
-      });
+        newNodes.splice(targetNodeIndex, 0, newNode);
 
-      toast.success("端末のサイズが変更されました");
+        return newNodes;
+      });
     },
     [setNodes]
   );
