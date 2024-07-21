@@ -5,7 +5,7 @@ import {
   useSearchParams,
 } from "next/navigation";
 import { useCallback, useRef } from "react";
-import { Node, NodeChange, NodePositionChange } from "reactflow";
+import { Node, NodeChange, NodePositionChange, OnConnect } from "reactflow";
 import { toast } from "sonner";
 import { useStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
@@ -20,14 +20,21 @@ const selector = (state: RFState) => ({
   setNodes: state.setNodes,
   onNodesChange: state.onNodesChange,
   onNodesPositionChange: state.onNodesPositionChange,
+  edges: state.edges,
+  onEdgesChange: state.onEdgesChange,
+  onConnectEdge: state.onConnectEdge,
 });
 
 export function useAdmin() {
   const store = useNodeStore();
-  const { nodes, onNodesPositionChange, setNodes } = useStore(
-    store,
-    useShallow(selector)
-  );
+  const {
+    nodes,
+    onNodesPositionChange,
+    setNodes,
+    onEdgesChange,
+    edges,
+    onConnectEdge,
+  } = useStore(store, useShallow(selector));
   const lastPosition = useRef({ x: 0, y: 0 });
   const positionChanged = useRef(false);
   const router = useRouter();
@@ -111,10 +118,20 @@ export function useAdmin() {
     [onNodesPositionChange, onPositionChange]
   );
 
+  const onConnect: OnConnect = useCallback(
+    (p) => {
+      onConnectEdge(async () => {}, p);
+    },
+    [onConnectEdge]
+  );
+
   return {
     nodes,
     onPositionChange,
     onNodesChange,
     onNodeDragStart,
+    edges,
+    onEdgesChange,
+    onConnect,
   };
 }
