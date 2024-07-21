@@ -5,22 +5,45 @@ import "reactflow/dist/style.css";
 import React from "react";
 
 import { Rnd } from "react-rnd";
-import ReactFlow, { Controls, Background, MiniMap, Panel } from "reactflow";
+import ReactFlow, {
+  Controls,
+  Background,
+  MiniMap,
+  Panel,
+  ConnectionMode,
+} from "reactflow";
 import { CustomSessionNode } from "@/features/admin/components/custom";
+import { CustomEdge } from "@/features/admin/components/custom/edge";
 import { AdminPanel } from "@/features/admin/components/panel";
 import { useAdmin } from "@/features/admin/hooks/use-admin";
+import { EDGE_TYPE } from "@/features/admin/store";
 
 const nodeTypes = { session: CustomSessionNode };
+const edgeTypes = {
+  [EDGE_TYPE]: CustomEdge,
+};
 
 export const AdminFlow = () => {
-  const { nodes, onNodesChange, onNodeDragStart } = useAdmin();
+  const {
+    nodes,
+    onNodesChange,
+    onNodeDragStart,
+    edges,
+    onEdgesChange,
+    onConnect,
+  } = useAdmin();
 
   return (
     <ReactFlow
+      connectionMode={ConnectionMode.Loose}
+      edges={edges}
+      edgeTypes={edgeTypes}
       fitView
       minZoom={0.1}
       nodes={nodes}
       nodeTypes={nodeTypes}
+      onConnect={onConnect}
+      onEdgesChange={onEdgesChange}
       onNodeDragStart={onNodeDragStart}
       onNodesChange={onNodesChange}
     >
