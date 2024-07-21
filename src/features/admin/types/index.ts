@@ -20,6 +20,7 @@ export type UserSession = {
   displayname: string;
   alignment: Alignment;
   connections: Connection[];
+  isStartDevice: boolean;
 };
 
 export type EdgeData = {

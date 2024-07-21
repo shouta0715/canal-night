@@ -25,6 +25,7 @@ export function getDefaultNode({
   displayname,
   alignment,
   connections,
+  isStartDevice,
 }: Omit<UserSession, "role">): Node<UserSession> {
   return {
     id,
@@ -37,6 +38,7 @@ export function getDefaultNode({
       displayname,
       alignment,
       connections,
+      isStartDevice,
     },
     position: { x: assignPosition.startX, y: assignPosition.startY },
   };
