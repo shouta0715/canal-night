@@ -28,11 +28,12 @@ export const AdminFlow = () => {
   const {
     nodes,
     onNodesChange,
-    onNodeDragStart,
+    onNodeClick,
     edges,
     onEdgesChange,
     onConnect,
     onDisConnect,
+    onNodeDragStart,
   } = useAdmin();
 
   return (
@@ -47,6 +48,7 @@ export const AdminFlow = () => {
       onConnect={onConnect}
       onEdgesChange={onEdgesChange}
       onEdgesDelete={onDisConnect}
+      onNodeClick={onNodeClick}
       onNodeDragStart={onNodeDragStart}
       onNodesChange={onNodesChange}
     >

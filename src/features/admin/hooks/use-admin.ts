@@ -2,9 +2,11 @@ import {
   Edge,
   Node,
   NodeChange,
+  NodeMouseHandler,
   NodePositionChange,
   OnConnect,
   OnEdgesDelete,
+  OnNodeDrag,
 } from "@xyflow/react";
 import {
   useParams,
@@ -109,17 +111,26 @@ export function useAdmin() {
     [mutateAsync, params, router]
   );
 
-  const onNodeDragStart = useCallback(
-    (_: React.MouseEvent, node: Node<UserSession>) => {
-      const { id } = node;
+  const onChangeNodeParams = useCallback(
+    (node: Node<UserSession>) => {
       const newSearchParams = new URLSearchParams(searchParams);
 
-      newSearchParams.set("node", id);
+      newSearchParams.set("node", node.id);
 
       const url = `${pathname}?${newSearchParams.toString()}`;
       window.history.replaceState({}, "", url);
     },
     [pathname, searchParams]
+  );
+
+  const onNodeDragStart: OnNodeDrag<Node<UserSession>> = useCallback(
+    (_, node) => onChangeNodeParams(node),
+    [onChangeNodeParams]
+  );
+
+  const onNodeClick: NodeMouseHandler<Node<UserSession>> = useCallback(
+    (_, node) => onChangeNodeParams(node),
+    [onChangeNodeParams]
   );
 
   const onNodesChange = useCallback(
@@ -163,12 +174,12 @@ export function useAdmin() {
 
   return {
     nodes,
-    onPositionChange,
     onNodesChange,
-    onNodeDragStart,
     edges,
+    onNodeClick,
     onEdgesChange,
     onConnect,
     onDisConnect,
+    onNodeDragStart,
   };
 }
