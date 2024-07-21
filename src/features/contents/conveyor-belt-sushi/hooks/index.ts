@@ -11,7 +11,7 @@ type Data =
   | ActionMode
   | ActionImage
   | {
-      action: "interaction";
+      action: "over";
       y: number;
       x: number;
       id: string;
@@ -46,7 +46,7 @@ export function useConveyorBeltSushi({ id: slug, initialMode }: ContentProps) {
         assignedPosition.current = data.assignPosition;
       }
 
-      if (data.action === "interaction") {
+      if (data.action === "over") {
         if (data.id === slug) return;
         if (alignment.current.isLeft) return;
         setSushi((p) => [
@@ -79,7 +79,12 @@ export function useConveyorBeltSushi({ id: slug, initialMode }: ContentProps) {
   const onOverWindow = (id: string, position: number, dish: number) => {
     if (alignment.current.isRight) return;
 
-    mutate({ id: slug, x: Math.round(position), data: { src: id, dish } });
+    mutate({
+      id: slug,
+      x: Math.round(position),
+      direction: "right",
+      data: { src: id, dish },
+    });
   };
 
   return {

@@ -1,6 +1,8 @@
 import { Mode } from "@/features/admin/store";
 import { Alignment, AssignedPosition } from "@/features/admin/types";
 
+export type Direction = "left" | "right" | "top" | "bottom";
+
 export type ContentProps = {
   initialMode: Mode;
   id: string;
