@@ -74,7 +74,7 @@ export function usePanelItem({
         console.error(error);
       }
     },
-    [appName, mutateAsync, position, session.id, size]
+    [appName, mutateAsync, position, session, size]
   );
 
   const onChangeSizeHandler = useCallback(

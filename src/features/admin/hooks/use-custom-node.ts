@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
-import { OnResizeEnd } from "@xyflow/react";
+import { Node, OnResizeEnd, useNodesData } from "@xyflow/react";
 import { useAtomValue } from "jotai";
 import { useParams, useSearchParams } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { changeSize } from "@/features/admin/api";
 import { Mode, interactionAtom } from "@/features/admin/store";
 import { UserSession } from "@/features/admin/types";
@@ -30,6 +30,17 @@ export function useCustomNode({ data, id }: UseCustomNodeProps) {
   });
 
   const [inputSize, setInputSize] = useState<Size>({ width, height });
+
+  const storeNode = useNodesData<Node<UserSession>>(id);
+
+  useEffect(() => {
+    if (!storeNode?.data) return;
+
+    setInputSize({
+      width: storeNode.data.width,
+      height: storeNode.data.height,
+    });
+  }, [storeNode?.data]);
 
   const onResizeEnd: OnResizeEnd = useCallback(
     (_, size) => {
