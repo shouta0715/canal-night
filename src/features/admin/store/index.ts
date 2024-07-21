@@ -12,13 +12,18 @@ import {
 } from "@xyflow/react";
 import { atomWithReset } from "jotai/utils";
 import { createStore } from "zustand";
-import { UserSession } from "@/features/admin/types";
-import { sessionToNode } from "@/features/admin/utils";
+import { EDGE_TYPE } from "@/features/admin/constant";
+import { EdgeData, UserSession } from "@/features/admin/types";
+import {
+  createEdgeId,
+  getEdgeDirection,
+  sessionToEdge,
+  sessionToNode,
+} from "@/features/admin/utils";
 
 export const interactionAtom = atomWithReset<string | null>(null);
 
 export type Mode = "view" | "connect";
-export const EDGE_TYPE = "custom";
 
 export type RFState = {
   // Node
@@ -31,10 +36,10 @@ export type RFState = {
   ) => void;
 
   // Edge
-  onEdgesChange: OnEdgesChange;
-  edges: Edge[];
+  onEdgesChange: OnEdgesChange<Edge<EdgeData>>;
+  edges: Edge<EdgeData>[];
   onConnectEdge: (
-    cb: (newEdge: Edge, newEdges: Edge[]) => Promise<void>,
+    cb: (newEdge: Edge<EdgeData>, newEdges: Edge<EdgeData>[]) => Promise<void>,
     params: Connection
   ) => void;
 
@@ -77,7 +82,7 @@ export const createNodeStore = (initialProps: UserSession[]) => {
     },
 
     // Edge
-    edges: [],
+    edges: sessionToEdge(initialProps),
     onEdgesChange: (changes) => {
       set((state) => ({
         edges: applyEdgeChanges(changes, state.edges),
@@ -92,24 +97,41 @@ export const createNodeStore = (initialProps: UserSession[]) => {
       )
         return;
 
-      const sourceDirection = params.sourceHandle.split("-").at(-1);
-      const targetDirection = params.targetHandle.split("-").at(-1);
+      const splitSourceDirection = params.sourceHandle.split("-").at(-1);
+      const splitTargetDirection = params.targetHandle.split("-").at(-1);
+      if (!splitSourceDirection || !splitTargetDirection) return;
 
-      const id = `${params.source}+${params.target}-${sourceDirection}->${targetDirection}`;
+      const sourceDirection = getEdgeDirection(splitSourceDirection);
+      const targetDirection = getEdgeDirection(splitTargetDirection);
+
+      const id = createEdgeId({
+        source: params.source,
+        target: params.target,
+        from: sourceDirection,
+        to: targetDirection,
+      });
 
       const alreadyConnected = get().edges.some((edge) => edge.id === id);
 
       if (alreadyConnected) return;
 
-      const newEdge: Edge = {
+      const newEdge: Edge<EdgeData> = {
         ...params,
         type: EDGE_TYPE,
         id,
         source: params.source,
         target: params.target,
+        targetHandle: params.targetHandle,
+        sourceHandle: params.sourceHandle,
+        data: {
+          from: sourceDirection,
+          to: targetDirection,
+          source: params.source,
+          target: params.target,
+        },
       };
 
-      const newEdges = addEdge(newEdge, get().edges);
+      const newEdges = addEdge<Edge<EdgeData>>(newEdge, get().edges);
 
       set(() => ({
         edges: newEdges,
