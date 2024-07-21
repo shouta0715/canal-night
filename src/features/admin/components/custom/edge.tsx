@@ -1,4 +1,4 @@
-import { BaseEdge, EdgeProps, getBezierPath } from "@xyflow/react";
+import { BaseEdge, Edge, EdgeProps, getBezierPath } from "@xyflow/react";
 import { useSearchParams } from "next/navigation";
 import React, { useMemo } from "react";
 import { useStore } from "zustand";
@@ -10,6 +10,7 @@ import {
 } from "@/features/admin/components/custom/markers";
 import { useNodeStore } from "@/features/admin/components/providers";
 import { Mode, RFState } from "@/features/admin/store";
+import { EdgeData } from "@/features/admin/types";
 
 export type GetSpecialPathParams = {
   sourceX: number;
@@ -43,7 +44,7 @@ export function CustomEdge({
   targetY,
   sourcePosition,
   targetPosition,
-}: EdgeProps) {
+}: EdgeProps<Edge<EdgeData>>) {
   const store = useNodeStore();
   const { edges } = useStore(store, useShallow(selector));
 

@@ -16,8 +16,8 @@ import { Rnd } from "react-rnd";
 import { CustomSessionNode } from "@/features/admin/components/custom";
 import { CustomEdge } from "@/features/admin/components/custom/edge";
 import { AdminPanel } from "@/features/admin/components/panel";
+import { EDGE_TYPE } from "@/features/admin/constant";
 import { useAdmin } from "@/features/admin/hooks/use-admin";
-import { EDGE_TYPE } from "@/features/admin/store";
 
 const nodeTypes = { session: CustomSessionNode };
 const edgeTypes = {
