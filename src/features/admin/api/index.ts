@@ -119,3 +119,26 @@ export const onConnect = async ({
     throw new Error("Failed to fetch connect");
   }
 };
+
+export const onDisconnect = async ({
+  appName,
+  connection,
+}: {
+  appName: string;
+  connection: Connection;
+}) => {
+  const res = await fetch(
+    `${API_URL}/${appName}/admin/${connection.source}/disconnect`,
+    {
+      method: "POST",
+      body: JSON.stringify(connection),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch disconnect");
+  }
+};
