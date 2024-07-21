@@ -56,7 +56,6 @@ export function useConveyorBeltSushi({ id: slug, initialMode }: ContentProps) {
       }
 
       if (data.action === "uploaded") {
-        if (!alignment.current.isLeft) return;
         const dish = Math.floor(Math.random() * 4) + 1;
         setSushi((p) => [...p, { id: data.id, x: -300, dish }]);
       }
