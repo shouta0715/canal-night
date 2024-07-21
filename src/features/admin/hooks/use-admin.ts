@@ -1,4 +1,11 @@
-import { Node, NodeChange, NodePositionChange, OnConnect } from "@xyflow/react";
+import {
+  Edge,
+  Node,
+  NodeChange,
+  NodePositionChange,
+  OnConnect,
+  OnEdgesDelete,
+} from "@xyflow/react";
 import {
   useParams,
   usePathname,
@@ -12,7 +19,7 @@ import { useShallow } from "zustand/react/shallow";
 import { useAdminAPI } from "@/features/admin/api/use-admin-api";
 import { useNodeStore } from "@/features/admin/components/providers";
 import { RFState } from "@/features/admin/store";
-import { UserSession } from "@/features/admin/types";
+import { EdgeData, UserSession } from "@/features/admin/types";
 import { calculateAlignment } from "@/features/admin/utils/calculate-position";
 
 const selector = (state: RFState) => ({
@@ -23,6 +30,7 @@ const selector = (state: RFState) => ({
   edges: state.edges,
   onEdgesChange: state.onEdgesChange,
   onConnectEdge: state.onConnectEdge,
+  onDisconnectEdge: state.onDisconnectEdge,
 });
 
 export function useAdmin() {
@@ -34,6 +42,7 @@ export function useAdmin() {
     onEdgesChange,
     edges,
     onConnectEdge,
+    onDisconnectEdge,
   } = useStore(store, useShallow(selector));
   const lastPosition = useRef({ x: 0, y: 0 });
   const positionChanged = useRef(false);
@@ -42,7 +51,9 @@ export function useAdmin() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const { mutateAsync, mutateConnect } = useAdminAPI({ setNodes });
+  const { mutateAsync, mutateConnect, mutateDisconnect } = useAdminAPI({
+    setNodes,
+  });
 
   const onPositionChange = useCallback(
     async (change: NodePositionChange, ns: Node<UserSession>[]) => {
@@ -133,6 +144,23 @@ export function useAdmin() {
     [mutateConnect, onConnectEdge, params]
   );
 
+  const onDisConnect: OnEdgesDelete<Edge<EdgeData>> = useCallback(
+    (p) => {
+      if (p.length !== 1) return;
+      const edge = p[0];
+
+      onDisconnectEdge(async (e) => {
+        if (!e.data) return;
+
+        mutateDisconnect({
+          appName: params["app-name"],
+          connection: e.data,
+        });
+      }, edge);
+    },
+    [mutateDisconnect, onDisconnectEdge, params]
+  );
+
   return {
     nodes,
     onPositionChange,
@@ -141,5 +169,6 @@ export function useAdmin() {
     edges,
     onEdgesChange,
     onConnect,
+    onDisConnect,
   };
 }
