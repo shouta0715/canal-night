@@ -10,6 +10,7 @@ import {
   AccordionItem,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ErrorMessage } from "@/features/admin/components/errors";
@@ -39,6 +40,8 @@ export function PanelItem({
     action,
     onSubmit,
     register,
+    onChangeIsStartDevice,
+    getValues,
     isPending,
     id,
     isDirty,
@@ -128,6 +131,21 @@ export function PanelItem({
 
             {errors.y?.message && (
               <ErrorMessage>{errors.y.message}</ErrorMessage>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Checkbox
+              checked={getValues("isStartDevice")}
+              id={`${id}-start-device`}
+              onCheckedChange={onChangeIsStartDevice}
+            />
+            <Label htmlFor={`${id}-start-device`}>
+              データ送信の開始端末に設定する
+            </Label>
+
+            {errors.isStartDevice?.message && (
+              <ErrorMessage>{errors.isStartDevice.message}</ErrorMessage>
             )}
           </div>
 
