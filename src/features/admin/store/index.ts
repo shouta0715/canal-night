@@ -42,6 +42,10 @@ export type RFState = {
     cb: (newEdge: Edge<EdgeData>, newEdges: Edge<EdgeData>[]) => Promise<void>,
     params: Connection
   ) => void;
+  onDisconnectEdge: (
+    cb: (edge: Edge<EdgeData>, newEdges: Edge<EdgeData>[]) => Promise<void>,
+    edge: Edge<EdgeData>
+  ) => void;
 
   getNode: (id: string) => Node<UserSession> | undefined;
 };
@@ -138,6 +142,53 @@ export const createNodeStore = (initialProps: UserSession[]) => {
       }));
 
       await cb(newEdge, newEdges);
+    },
+    onDisconnectEdge: async (cb, edge) => {
+      if (
+        !edge.source ||
+        !edge.target ||
+        !edge.sourceHandle ||
+        !edge.targetHandle
+      )
+        return;
+
+      const splitSourceDirection = edge.sourceHandle.split("-").at(-1);
+      const splitTargetDirection = edge.targetHandle.split("-").at(-1);
+      if (!splitSourceDirection || !splitTargetDirection) return;
+
+      const from = getEdgeDirection(splitSourceDirection);
+      const to = getEdgeDirection(splitTargetDirection);
+
+      const id = createEdgeId({
+        source: edge.source,
+        target: edge.target,
+        from,
+        to,
+      });
+
+      const newEdges = get().edges.filter((e) => e.id !== id);
+
+      set(() => ({
+        edges: newEdges,
+      }));
+
+      const deletedEdge: Edge<EdgeData> = {
+        id,
+        source: edge.source,
+        target: edge.target,
+        sourceHandle: edge.sourceHandle,
+        targetHandle: edge.targetHandle,
+        type: EDGE_TYPE,
+
+        data: {
+          from,
+          to,
+          source: edge.source,
+          target: edge.target,
+        },
+      };
+
+      await cb(deletedEdge, newEdges);
     },
   }));
 };
