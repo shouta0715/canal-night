@@ -4,7 +4,7 @@ import { useSetAtom } from "jotai";
 import { useParams } from "next/navigation";
 import { useCallback } from "react";
 import { toast } from "sonner";
-import { fetchChangedPosition } from "@/features/admin/api";
+import { fetchChangedPosition, onConnect } from "@/features/admin/api";
 import { useAdminSocket } from "@/features/admin/hooks/use-admin-socket";
 import { RFState, interactionAtom } from "@/features/admin/store";
 import {
@@ -29,6 +29,10 @@ export function useAdminAPI({ setNodes }: UseAdminAPIProps) {
 
   const { mutateAsync } = useMutation({
     mutationFn: fetchChangedPosition,
+  });
+
+  const { mutateAsync: mutateConnect } = useMutation({
+    mutationFn: onConnect,
   });
 
   const onJoin = useCallback(
@@ -182,5 +186,6 @@ export function useAdminAPI({ setNodes }: UseAdminAPIProps) {
 
   return {
     mutateAsync,
+    mutateConnect,
   };
 }

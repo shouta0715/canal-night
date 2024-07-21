@@ -1,6 +1,6 @@
 import { API_URL } from "@/constant";
 import { Mode } from "@/features/admin/store";
-import { Alignment } from "@/features/admin/types";
+import { Alignment, Connection } from "@/features/admin/types";
 
 type FetchChangedPosition = {
   appName: string;
@@ -94,5 +94,28 @@ export const changeMode = async ({
 
   if (!res.ok) {
     throw new Error("Failed to fetch mode");
+  }
+};
+
+export const onConnect = async ({
+  appName,
+  connection,
+}: {
+  appName: string;
+  connection: Connection;
+}) => {
+  const res = await fetch(
+    `${API_URL}/${appName}/admin/${connection.source}/connect`,
+    {
+      method: "POST",
+      body: JSON.stringify(connection),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch connect");
   }
 };
