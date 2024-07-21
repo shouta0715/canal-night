@@ -1,6 +1,6 @@
+import { BaseEdge, EdgeProps, getBezierPath } from "@xyflow/react";
 import { useSearchParams } from "next/navigation";
 import React, { useMemo } from "react";
-import { BaseEdge, EdgeProps, getBezierPath } from "reactflow";
 import { useStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 import {

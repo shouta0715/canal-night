@@ -1,4 +1,4 @@
-import { Node } from "reactflow";
+import { Node } from "@xyflow/react";
 import { UserSession } from "@/features/admin/types";
 
 export function sessionToNode(sessions: UserSession[]): Node<UserSession>[] {

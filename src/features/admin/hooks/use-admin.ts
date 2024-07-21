@@ -1,3 +1,4 @@
+import { Node, NodeChange, NodePositionChange, OnConnect } from "@xyflow/react";
 import {
   useParams,
   usePathname,
@@ -5,7 +6,6 @@ import {
   useSearchParams,
 } from "next/navigation";
 import { useCallback, useRef } from "react";
-import { Node, NodeChange, NodePositionChange, OnConnect } from "reactflow";
 import { toast } from "sonner";
 import { useStore } from "zustand";
 import { useShallow } from "zustand/react/shallow";
@@ -112,7 +112,7 @@ export function useAdmin() {
   );
 
   const onNodesChange = useCallback(
-    (changes: NodeChange[]) => {
+    (changes: NodeChange<Node<UserSession>>[]) => {
       onNodesPositionChange(onPositionChange, changes);
     },
     [onNodesPositionChange, onPositionChange]

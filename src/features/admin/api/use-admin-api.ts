@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
+import { Node } from "@xyflow/react";
 import { useSetAtom } from "jotai";
 import { useParams } from "next/navigation";
 import { useCallback } from "react";
-import { Node } from "reactflow";
 import { toast } from "sonner";
 import { fetchChangedPosition } from "@/features/admin/api";
 import { useAdminSocket } from "@/features/admin/hooks/use-admin-socket";

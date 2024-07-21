@@ -1,5 +1,5 @@
+import { Handle, Node, NodeProps, NodeResizer, Position } from "@xyflow/react";
 import React, { memo } from "react";
-import { Handle, NodeProps, NodeResizer, Position } from "reactflow";
 
 import { useCustomNode } from "@/features/admin/hooks/use-custom-node";
 import { UserSession } from "@/features/admin/types";
@@ -12,7 +12,11 @@ const positions: Position[] = [
   Position.Bottom,
 ];
 
-function CustomSession({ data, id, isConnectable }: NodeProps<UserSession>) {
+function CustomSession({
+  data,
+  id,
+  isConnectable,
+}: NodeProps<Node<UserSession>>) {
   const {
     inputSize,
     interactionId,
@@ -35,6 +39,7 @@ function CustomSession({ data, id, isConnectable }: NodeProps<UserSession>) {
       {positions.map((position) => (
         <Handle
           key={position}
+          className="rounded-full"
           id={`${id}-${position}`}
           isConnectable={isConnectable}
           position={position}

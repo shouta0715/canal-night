@@ -1,17 +1,18 @@
 "use client";
 
-import "reactflow/dist/style.css";
+import "@xyflow/react/dist/base.css";
 
-import React from "react";
-
-import { Rnd } from "react-rnd";
-import ReactFlow, {
+import {
+  ReactFlow,
   Controls,
   Background,
   MiniMap,
   Panel,
   ConnectionMode,
-} from "reactflow";
+} from "@xyflow/react";
+import React from "react";
+
+import { Rnd } from "react-rnd";
 import { CustomSessionNode } from "@/features/admin/components/custom";
 import { CustomEdge } from "@/features/admin/components/custom/edge";
 import { AdminPanel } from "@/features/admin/components/panel";

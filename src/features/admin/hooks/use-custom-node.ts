@@ -1,8 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
+import { OnResizeEnd } from "@xyflow/react";
 import { useAtomValue } from "jotai";
 import { useParams, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
-import { OnResizeEnd } from "reactflow";
 import { changeSize } from "@/features/admin/api";
 import { Mode, interactionAtom } from "@/features/admin/store";
 import { UserSession } from "@/features/admin/types";

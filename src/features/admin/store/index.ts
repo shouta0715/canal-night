@@ -1,4 +1,3 @@
-import { atomWithReset } from "jotai/utils";
 import {
   Connection,
   Edge,
@@ -10,7 +9,8 @@ import {
   addEdge,
   applyEdgeChanges,
   applyNodeChanges,
-} from "reactflow";
+} from "@xyflow/react";
+import { atomWithReset } from "jotai/utils";
 import { createStore } from "zustand";
 import { UserSession } from "@/features/admin/types";
 import { sessionToNode } from "@/features/admin/utils";
@@ -23,11 +23,11 @@ export const EDGE_TYPE = "custom";
 export type RFState = {
   // Node
   nodes: Node<UserSession>[];
-  onNodesChange: OnNodesChange;
+  onNodesChange: OnNodesChange<Node<UserSession>>;
   setNodes: (cb: (nodes: Node<UserSession>[]) => Node<UserSession>[]) => void;
   onNodesPositionChange: (
     cb: (change: NodePositionChange, _: Node<UserSession>[]) => Promise<void>,
-    changes: NodeChange[]
+    changes: NodeChange<Node<UserSession>>[]
   ) => void;
 
   // Edge
@@ -45,9 +45,9 @@ export const createNodeStore = (initialProps: UserSession[]) => {
   return createStore<RFState>()((set, get) => ({
     // Node
     nodes: sessionToNode(initialProps),
-    onNodesChange: (changes: NodeChange[]) => {
+    onNodesChange: (changes: NodeChange<Node<UserSession>>[]) => {
       set((state) => ({
-        nodes: applyNodeChanges(changes, state.nodes),
+        nodes: applyNodeChanges<Node<UserSession>>(changes, state.nodes),
       }));
     },
     setNodes: (cb) => {
