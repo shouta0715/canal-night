@@ -42,7 +42,7 @@ export function useAdmin() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const { mutateAsync } = useAdminAPI({ setNodes });
+  const { mutateAsync, mutateConnect } = useAdminAPI({ setNodes });
 
   const onPositionChange = useCallback(
     async (change: NodePositionChange, ns: Node<UserSession>[]) => {
@@ -120,9 +120,17 @@ export function useAdmin() {
 
   const onConnect: OnConnect = useCallback(
     (p) => {
-      onConnectEdge(async () => {}, p);
+      onConnectEdge(async (edge) => {
+        const { data } = edge;
+        if (!data) return;
+
+        mutateConnect({
+          appName: params["app-name"],
+          connection: data,
+        });
+      }, p);
     },
-    [onConnectEdge]
+    [mutateConnect, onConnectEdge, params]
   );
 
   return {
