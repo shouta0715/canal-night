@@ -1,7 +1,17 @@
+import { Position } from "@xyflow/react";
+
 export type Alignment = {
   isLeft: boolean;
   isRight: boolean;
 };
+
+export type Connection = {
+  source: string;
+  target: string;
+  from: Position;
+  to: Position;
+};
+
 export type UserSession = {
   width: number;
   height: number;
@@ -9,6 +19,14 @@ export type UserSession = {
   id: string;
   displayname: string;
   alignment: Alignment;
+  connections: Connection[];
+};
+
+export type EdgeData = {
+  from: Position;
+  to: Position;
+  source: string;
+  target: string;
 };
 
 export type JoinAdminData = {

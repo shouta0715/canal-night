@@ -1,26 +1,52 @@
 "use client";
 
-import "reactflow/dist/style.css";
+import "@xyflow/react/dist/base.css";
 
+import {
+  ReactFlow,
+  Controls,
+  Background,
+  MiniMap,
+  Panel,
+  ConnectionMode,
+} from "@xyflow/react";
 import React from "react";
 
 import { Rnd } from "react-rnd";
-import ReactFlow, { Controls, Background, MiniMap, Panel } from "reactflow";
 import { CustomSessionNode } from "@/features/admin/components/custom";
+import { CustomEdge } from "@/features/admin/components/custom/edge";
 import { AdminPanel } from "@/features/admin/components/panel";
+import { EDGE_TYPE } from "@/features/admin/constant";
 import { useAdmin } from "@/features/admin/hooks/use-admin";
 
 const nodeTypes = { session: CustomSessionNode };
+const edgeTypes = {
+  [EDGE_TYPE]: CustomEdge,
+};
 
 export const AdminFlow = () => {
-  const { nodes, onNodesChange, onNodeDragStart } = useAdmin();
+  const {
+    nodes,
+    onNodesChange,
+    onNodeDragStart,
+    edges,
+    onEdgesChange,
+    onConnect,
+    onDisConnect,
+  } = useAdmin();
 
   return (
     <ReactFlow
+      connectionMode={ConnectionMode.Loose}
+      edges={edges}
+      edgeTypes={edgeTypes}
       fitView
       minZoom={0.1}
       nodes={nodes}
       nodeTypes={nodeTypes}
+      onConnect={onConnect}
+      onEdgesChange={onEdgesChange}
+      onEdgesDelete={onDisConnect}
       onNodeDragStart={onNodeDragStart}
       onNodesChange={onNodesChange}
     >
