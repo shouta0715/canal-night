@@ -1,11 +1,18 @@
-import React from "react";
-import { NodeProps, NodeResizer } from "reactflow";
+import React, { memo } from "react";
+import { Handle, NodeProps, NodeResizer, Position } from "reactflow";
 
 import { useCustomNode } from "@/features/admin/hooks/use-custom-node";
 import { UserSession } from "@/features/admin/types";
 import { cn } from "@/lib/utils";
 
-export function CustomSessionNode({ data, id }: NodeProps<UserSession>) {
+const positions: Position[] = [
+  Position.Left,
+  Position.Top,
+  Position.Right,
+  Position.Bottom,
+];
+
+function CustomSession({ data, id, isConnectable }: NodeProps<UserSession>) {
   const {
     inputSize,
     interactionId,
@@ -25,13 +32,31 @@ export function CustomSessionNode({ data, id }: NodeProps<UserSession>) {
         height: inputSize.height,
       }}
     >
+      {positions.map((position) => (
+        <Handle
+          key={position}
+          id={`${id}-${position}`}
+          isConnectable={isConnectable}
+          position={position}
+          style={{
+            width: 24,
+            height: 24,
+            zIndex: 9999,
+            top: position === Position.Top ? -60 : undefined,
+            bottom: position === Position.Bottom ? -60 : undefined,
+            left: position === Position.Left ? -60 : undefined,
+            right: position === Position.Right ? -60 : undefined,
+          }}
+          type="source"
+        />
+      ))}
+
       <NodeResizer
         handleStyle={{
           backgroundColor: "black",
           width: 16,
           height: 16,
           zIndex: 9999,
-          borderRadius: 4,
         }}
         isVisible={node === id}
         lineStyle={{
@@ -66,3 +91,5 @@ export function CustomSessionNode({ data, id }: NodeProps<UserSession>) {
     </div>
   );
 }
+
+export const CustomSessionNode = memo(CustomSession);
