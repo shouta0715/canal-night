@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ErrorMessage } from "@/features/admin/components/errors";
 import { usePanelItem } from "@/features/admin/hooks/use-panel-item";
 import { UserSession } from "@/features/admin/types";
 import { cn } from "@/lib/utils";
@@ -35,14 +36,13 @@ export function PanelItem({
 }: PanelItemProps) {
   const {
     onClickHandler,
-    onChangePositionHandler,
-    onChangeSizeHandler,
     action,
-    handleSubmit,
+    onSubmit,
+    register,
     isPending,
-    size,
-    position,
     id,
+    isDirty,
+    errors,
   } = usePanelItem({ session, appName, active, searchParams, pathname });
 
   return (
@@ -77,54 +77,63 @@ export function PanelItem({
           active && isConnectMode ? "bg-green-50" : ""
         )}
       >
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        <form className="flex flex-col gap-4" onSubmit={onSubmit}>
           <div className="flex flex-col gap-2">
             <Label htmlFor={`${id}-width`}>画面の幅（横幅）（px）</Label>
             <Input
+              {...register("width", {
+                valueAsNumber: true,
+              })}
               id={`${id}-width`}
-              name="width"
-              onChange={onChangeSizeHandler("width")}
-              type="number"
-              value={size.width}
             />
+            {errors.width?.message && (
+              <ErrorMessage>{errors.width.message}</ErrorMessage>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
             <Label htmlFor={`${id}-height`}>画面の高さ（縦幅）（px）</Label>
             <Input
+              {...register("height", {
+                valueAsNumber: true,
+              })}
               id={`${id}-height`}
-              name="height"
-              onChange={onChangeSizeHandler("height")}
-              type="number"
-              value={size.height}
             />
+            {errors.height?.message && (
+              <ErrorMessage>{errors.height.message}</ErrorMessage>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
             <Label htmlFor={`${id}-x`}>X座標</Label>
             <Input
+              {...register("x", {
+                valueAsNumber: true,
+              })}
               id={`${id}-x`}
-              name="x"
-              onChange={onChangePositionHandler("x")}
-              type="number"
-              value={position.x}
             />
+            {errors.x?.message && (
+              <ErrorMessage>{errors.x.message}</ErrorMessage>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
             <Label htmlFor={`${id}-y`}>Y座標</Label>
             <Input
+              {...register("y", {
+                valueAsNumber: true,
+              })}
               id={`${id}-y`}
-              name="y"
-              onChange={onChangePositionHandler("y")}
-              type="number"
-              value={position.y}
             />
+
+            {errors.y?.message && (
+              <ErrorMessage>{errors.y.message}</ErrorMessage>
+            )}
           </div>
 
           <Button
             className="mx-auto w-max px-6 font-semibold"
-            disabled={isPending}
+            disabled={isPending || !isDirty}
             size="sm"
             type="submit"
           >
