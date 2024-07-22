@@ -30,6 +30,7 @@ export type RFState = {
   nodes: Node<UserSession>[];
   onNodesChange: OnNodesChange<Node<UserSession>>;
   setNodes: (cb: (nodes: Node<UserSession>[]) => Node<UserSession>[]) => void;
+  updateNode: (id: string, state: Partial<UserSession>) => void;
   onNodesPositionChange: (
     cb: (change: NodePositionChange, _: Node<UserSession>[]) => Promise<void>,
     changes: NodeChange<Node<UserSession>>[]
@@ -57,6 +58,21 @@ export const createNodeStore = (initialProps: UserSession[]) => {
     onNodesChange: (changes: NodeChange<Node<UserSession>>[]) => {
       set((state) => ({
         nodes: applyNodeChanges<Node<UserSession>>(changes, state.nodes),
+      }));
+    },
+    updateNode: (id, state) => {
+      set((s) => ({
+        nodes: s.nodes.map((node) => {
+          if (node.id !== id) return node;
+
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              ...state,
+            },
+          };
+        }),
       }));
     },
     setNodes: (cb) => {

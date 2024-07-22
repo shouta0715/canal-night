@@ -1,11 +1,11 @@
 import { API_URL } from "@/constant";
 import { Mode } from "@/features/admin/store";
-import { Alignment, Connection } from "@/features/admin/types";
+import { Connection } from "@/features/admin/types";
 
 type FetchChangedPosition = {
   appName: string;
   id: string;
-  body: { x: number; y: number; alignment: Alignment };
+  body: { x: number; y: number };
 };
 
 export const fetchChangedPosition = async ({

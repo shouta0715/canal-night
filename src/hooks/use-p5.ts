@@ -2,12 +2,14 @@ import p5 from "p5";
 import { useCallback, useRef } from "react";
 import { Mode } from "@/features/admin/store";
 import { useDebounce, useMode, useSocket } from "@/hooks";
+import { UserState } from "@/types";
 import { fetchResize } from "@/utils";
 
 type UseP5Props<T> = {
   id: string;
   appName: string;
   callback: (p: p5, data: T) => void;
+  onJoin?: (state: UserState) => void;
   initialMode: Mode;
 };
 
@@ -17,6 +19,7 @@ const height = window.innerHeight;
 export function useP5<T extends Record<string, unknown>>({
   id,
   callback,
+  onJoin,
   appName,
   initialMode,
 }: UseP5Props<T>) {
@@ -36,6 +39,11 @@ export function useP5<T extends Record<string, unknown>>({
       if (data?.action === "mode" && data?.mode) {
         onModeRedirect(data.mode as Mode);
       }
+
+      if (data?.action === "join" && data?.state) {
+        onJoin?.(data.state as UserState);
+      }
+
       const p5Instance = p5Ref.current;
       if (!p5Instance) return;
       callback(p5Instance, data);

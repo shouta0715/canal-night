@@ -22,7 +22,7 @@ export function useCustomNode({ data, id }: UseCustomNodeProps) {
   const node = searchParams.get("node") || "";
   const mode = (searchParams.get("mode") || "view") as Mode;
   const params = useParams<{ "app-name": string }>();
-  const { width, height, displayname, alignment } = data;
+  const { width, height, displayname } = data;
   const interactionId = useAtomValue(interactionAtom);
 
   const { mutate, isPending } = useMutation({
@@ -62,7 +62,6 @@ export function useCustomNode({ data, id }: UseCustomNodeProps) {
     interactionId,
     onResizeEnd,
     displayname,
-    alignment,
     setInputSize,
   };
 }
