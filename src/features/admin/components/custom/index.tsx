@@ -24,7 +24,6 @@ function CustomSession({
     setInputSize,
     onResizeEnd,
     mode,
-    alignment,
     displayname,
   } = useCustomNode({ data, id });
 
@@ -88,9 +87,11 @@ function CustomSession({
         )}
       >
         <p className="flex h-full items-center justify-center text-4xl font-bold">
-          {alignment.isLeft && "👈"}
+          {data.alignment.isTop ? "👆" : ""}
+          {data.alignment.isLeft ? "👈" : ""}
           {displayname}
-          {alignment.isRight && "👉"}
+          {data.alignment.isRight ? "👉" : ""}
+          {data.alignment.isBottom ? "👇" : ""}
         </p>
       </div>
     </div>

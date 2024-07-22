@@ -4,11 +4,14 @@ import { useSetAtom } from "jotai";
 import { useParams } from "next/navigation";
 import { useCallback } from "react";
 import { toast } from "sonner";
+import { useStore } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 import {
   fetchChangedPosition,
   onConnect,
   onDisconnect,
 } from "@/features/admin/api";
+import { useNodeStore } from "@/features/admin/components/providers";
 import { useAdminSocket } from "@/features/admin/hooks/use-admin-socket";
 import { RFState, interactionAtom } from "@/features/admin/store";
 import {
@@ -19,6 +22,7 @@ import {
   ResizeAdminData,
   UserSession,
   ChangePositionAdminData,
+  ConnectionAdminData,
 } from "@/features/admin/types";
 import { getDefaultNode } from "@/features/admin/utils";
 
@@ -28,6 +32,11 @@ type UseAdminAPIProps = {
 
 export function useAdminAPI({ setNodes }: UseAdminAPIProps) {
   const params = useParams<{ "app-name": string }>();
+  const store = useNodeStore();
+  const { updateNode } = useStore(
+    store,
+    useShallow((s) => ({ updateNode: s.updateNode }))
+  );
 
   const setInteractionId = useSetAtom(interactionAtom);
 
@@ -172,6 +181,15 @@ export function useAdminAPI({ setNodes }: UseAdminAPIProps) {
     [setNodes]
   );
 
+  const onConnection = useCallback(
+    (data: ConnectionAdminData) => {
+      const { source, target } = data;
+      updateNode(source.id, source);
+      updateNode(target.id, target);
+    },
+    [updateNode]
+  );
+
   useAdminSocket<AdminData>({
     callback: (data) => {
       if (data.action === "join") onJoin(data);
@@ -187,6 +205,8 @@ export function useAdminAPI({ setNodes }: UseAdminAPIProps) {
       if (data.action === "displayname") onDisplayname(data);
 
       if (data.action === "position") onPosition(data);
+
+      if (data.action === "connection") onConnection(data);
     },
     appName: params["app-name"],
   });
