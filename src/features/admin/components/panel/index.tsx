@@ -5,6 +5,7 @@ import { Cable, CodeXml } from "lucide-react";
 import React from "react";
 import { Accordion } from "@/components/ui/accordion";
 import { SwitchRoot, SwitchThumb } from "@/components/ui/switch";
+import { CustomInput } from "@/features/admin/components/custom-input";
 import { PanelItem } from "@/features/admin/components/panel-item";
 import { useAdminPanel } from "@/features/admin/hooks/use-admin-panel";
 import { UserSession } from "@/features/admin/types";
@@ -51,23 +52,30 @@ export function AdminPanel() {
           </SwitchThumb>
         </SwitchRoot>
       </div>
-      <Accordion defaultValue={[selectedNodeId ?? ""]} type="multiple">
-        {nodes.map((node) => {
-          const key = generateKey(node.data);
 
-          return (
-            <PanelItem
-              key={key}
-              active={selectedNodeId === node.id}
-              appName={appName}
-              isConnectMode={isConnectMode}
-              pathname={pathname}
-              searchParams={searchParams}
-              session={node.data}
-            />
-          );
-        })}
-      </Accordion>
+      <CustomInput />
+
+      <div className="mt-12 space-y-2">
+        <p className="text-sm font-semibold">接続されている端末 一覧</p>
+
+        <Accordion defaultValue={[selectedNodeId ?? ""]} type="multiple">
+          {nodes.map((node) => {
+            const key = generateKey(node.data);
+
+            return (
+              <PanelItem
+                key={key}
+                active={selectedNodeId === node.id}
+                appName={appName}
+                isConnectMode={isConnectMode}
+                pathname={pathname}
+                searchParams={searchParams}
+                session={node.data}
+              />
+            );
+          })}
+        </Accordion>
+      </div>
     </div>
   );
 }
