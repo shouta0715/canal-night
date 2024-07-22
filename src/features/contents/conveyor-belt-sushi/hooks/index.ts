@@ -2,7 +2,13 @@ import { useCallback, useRef, useState } from "react";
 import { Alignment, AssignedPosition } from "@/features/admin/types";
 import { useMutateOver } from "@/features/contents/conveyor-belt-sushi/api";
 import { useMode, useSocket } from "@/hooks";
-import { ActionImage, ActionMode, ActionPosition, ContentProps } from "@/types";
+import {
+  ActionImage,
+  ActionMode,
+  ActionPosition,
+  ContentProps,
+  UserState,
+} from "@/types";
 
 const appName = "conveyor-belt-sushi";
 
@@ -16,6 +22,14 @@ type Data =
       x: number;
       id: string;
       data: { src: string; dish: number };
+    }
+  | {
+      action: "connection";
+      alignment: Alignment;
+    }
+  | {
+      action: "join";
+      state: UserState;
     };
 
 type Sushi = {
@@ -27,9 +41,12 @@ type Sushi = {
 export function useConveyorBeltSushi({ id: slug, initialMode }: ContentProps) {
   const { mode, onModeRedirect } = useMode(appName, initialMode);
   const alignment = useRef<Alignment>({
-    isLeft: false,
-    isRight: false,
+    isLeft: true,
+    isRight: true,
+    isTop: true,
+    isBottom: true,
   });
+
   const assignedPosition = useRef<AssignedPosition | null>();
 
   const [sushi, setSushi] = useState<Sushi[]>([]);
@@ -58,6 +75,14 @@ export function useConveyorBeltSushi({ id: slug, initialMode }: ContentProps) {
       if (data.action === "uploaded") {
         const dish = Math.floor(Math.random() * 4) + 1;
         setSushi((p) => [...p, { id: data.id, x: -300, dish }]);
+      }
+
+      if (data.action === "connection") {
+        alignment.current = data.alignment;
+      }
+
+      if (data.action === "join") {
+        alignment.current = data.state.alignment;
       }
     },
     [onModeRedirect, slug]
