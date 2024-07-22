@@ -1,3 +1,5 @@
+import { useMutation } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 import React from "react";
 import { useStore } from "zustand";
 import {
@@ -12,6 +14,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { deleteCustom, updateCustom } from "@/features/admin/api";
 import { CustomInputFormDialog } from "@/features/admin/components/custom-input/form";
 import { useNodeStore } from "@/features/admin/components/providers";
 import { CustomInput as TCustomInput } from "@/features/admin/schema";
@@ -22,12 +25,30 @@ type CustomInputProps = {
 };
 export function CustomInputItem({ custom }: CustomInputProps) {
   const store = useNodeStore();
-  const { deleteCustom, updateCustom } = useStore(store, (s) => ({
-    deleteCustom: s.deleteCustom,
-    updateCustom: s.updateCustom,
+  const { deleteStoreCustom, updateStoreCustom } = useStore(store, (s) => ({
+    deleteStoreCustom: s.deleteCustom,
+    updateStoreCustom: s.updateCustom,
   }));
+  const params = useParams<{ "app-name": string }>();
 
   const [open, setOpen] = React.useState(false);
+  const { mutate } = useMutation({
+    onMutate: updateCustom,
+  });
+
+  const { mutate: mutateDelete } = useMutation({
+    onMutate: deleteCustom,
+  });
+
+  const submitHandler = (data: TCustomInput) => {
+    mutate({ appName: params["app-name"], data, key: custom.key });
+    updateStoreCustom(custom.key, data);
+  };
+
+  const onDelete = () => {
+    mutateDelete({ appName: params["app-name"], key: custom.key });
+    deleteStoreCustom(custom.key);
+  };
 
   return (
     <>
@@ -37,7 +58,7 @@ export function CustomInputItem({ custom }: CustomInputProps) {
         isEdit
         open={open}
         setOpen={setOpen}
-        submitHandler={(d) => updateCustom(custom.key, d)}
+        submitHandler={submitHandler}
       />
       <div className="grid gap-3">
         <div className="flex flex-col gap-2">
@@ -94,9 +115,7 @@ export function CustomInputItem({ custom }: CustomInputProps) {
                     buttonVariants({ variant: "destructive" }),
                     "font-bold"
                   )}
-                  onClick={() => {
-                    deleteCustom(custom.key);
-                  }}
+                  onClick={() => onDelete()}
                 >
                   削除する
                 </AlertDialogAction>

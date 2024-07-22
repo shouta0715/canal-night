@@ -1,4 +1,6 @@
+import { useMutation } from "@tanstack/react-query";
 import { Minus, Plus, PlusIcon } from "lucide-react";
+import { useParams } from "next/navigation";
 import React from "react";
 import { useStore } from "zustand";
 import {
@@ -10,18 +12,29 @@ import {
 } from "@/components/ui/accordion";
 
 import { Button } from "@/components/ui/button";
+import { addCustom } from "@/features/admin/api";
 import { CustomInputFormDialog } from "@/features/admin/components/custom-input/form";
 import { CustomInputItem } from "@/features/admin/components/custom-input-item";
 import { useNodeStore } from "@/features/admin/components/providers";
+import { CustomInput as TCustomInput } from "@/features/admin/schema";
 
 export function CustomInput() {
   const store = useNodeStore();
 
-  const { customs, addCustom } = useStore(store, (s) => ({
+  const { customs, addStoreCustom } = useStore(store, (s) => ({
     customs: s.customs,
-    addCustom: s.addCustom,
+    addStoreCustom: s.addCustom,
   }));
+  const params = useParams<{ "app-name": string }>();
   const [open, setOpen] = React.useState(false);
+  const { mutate } = useMutation({
+    onMutate: addCustom,
+  });
+
+  const submitHandler = (data: TCustomInput) => {
+    mutate({ appName: params["app-name"], data });
+    addStoreCustom(data);
+  };
 
   return (
     <div className="mt-8">
@@ -37,7 +50,7 @@ export function CustomInput() {
       <CustomInputFormDialog
         open={open}
         setOpen={setOpen}
-        submitHandler={addCustom}
+        submitHandler={submitHandler}
       />
       <Accordion className="mt-4" type="multiple">
         <AccordionItem value="custom">
