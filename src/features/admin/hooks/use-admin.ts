@@ -22,7 +22,6 @@ import { useAdminAPI } from "@/features/admin/api/use-admin-api";
 import { useNodeStore } from "@/features/admin/components/providers";
 import { RFState } from "@/features/admin/store";
 import { EdgeData, UserSession } from "@/features/admin/types";
-import { calculateAlignment } from "@/features/admin/utils/calculate-position";
 
 const selector = (state: RFState) => ({
   nodes: state.nodes,
@@ -58,7 +57,7 @@ export function useAdmin() {
   });
 
   const onPositionChange = useCallback(
-    async (change: NodePositionChange, ns: Node<UserSession>[]) => {
+    async (change: NodePositionChange) => {
       if (change.dragging === true) {
         lastPosition.current = change.position || { x: 0, y: 0 };
         positionChanged.current = true;
@@ -70,35 +69,15 @@ export function useAdmin() {
 
         if (!positionChanged.current) return;
 
-        const {
-          isLeft,
-          isRight,
-          nodes: changedNodes,
-        } = calculateAlignment({ nodes: ns, x, y, id });
-
-        const body = { x, y, alignment: { isLeft, isRight } };
-
         try {
-          const promises = changedNodes.map((node) => {
-            return mutateAsync({
-              appName: params["app-name"],
-              id: node.id,
-              body: {
-                x: node.position.x,
-                y: node.position.y,
-                alignment: { ...node.data.alignment },
-              },
-            });
+          await mutateAsync({
+            appName: params["app-name"],
+            id,
+            body: {
+              x,
+              y,
+            },
           });
-
-          await Promise.all([
-            ...promises,
-            mutateAsync({
-              appName: params["app-name"],
-              id,
-              body,
-            }),
-          ]);
 
           positionChanged.current = false;
 

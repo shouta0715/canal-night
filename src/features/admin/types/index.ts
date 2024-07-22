@@ -3,6 +3,8 @@ import { Position } from "@xyflow/react";
 export type Alignment = {
   isLeft: boolean;
   isRight: boolean;
+  isTop: boolean;
+  isBottom: boolean;
 };
 
 export type Connection = {
@@ -18,8 +20,8 @@ export type UserSession = {
   assignPosition: AssignedPosition;
   id: string;
   displayname: string;
-  alignment: Alignment;
   connections: Connection[];
+  alignment: Alignment;
   isStartDevice: boolean;
 };
 
@@ -71,6 +73,12 @@ export type ChangeDisplaynameAdminData = {
   displayname: string;
 };
 
+export type ConnectionAdminData = {
+  action: "connection";
+  target: UserSession;
+  source: UserSession;
+};
+
 export type AdminData =
   | JoinAdminData
   | LeaveAdminData
@@ -78,7 +86,8 @@ export type AdminData =
   | ResizeAdminData
   | ChangeDeviceAdminData
   | ChangePositionAdminData
-  | ChangeDisplaynameAdminData;
+  | ChangeDisplaynameAdminData
+  | ConnectionAdminData;
 
 export type AssignedPosition = {
   startX: number;
