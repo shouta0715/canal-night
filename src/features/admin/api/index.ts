@@ -1,5 +1,5 @@
 import { API_URL } from "@/constant";
-import { CustomInput } from "@/features/admin/schema";
+import { CustomInput, DeviceInput } from "@/features/admin/schema";
 import { Mode } from "@/features/admin/store";
 import { Connection } from "@/features/admin/types";
 
@@ -56,14 +56,11 @@ export async function changeSize({
 export const changeDeviceData = async ({
   id,
   appName,
-  ...data
+  data,
 }: {
   id: string;
   appName: string;
-  width: number;
-  height: number;
-  x: number;
-  y: number;
+  data: DeviceInput;
 }) => {
   const res = await fetch(`${API_URL}/${appName}/admin/${id}/device`, {
     method: "POST",
@@ -74,7 +71,7 @@ export const changeDeviceData = async ({
   });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch resize");
+    throw new Error("Failed to fetch device");
   }
 };
 
