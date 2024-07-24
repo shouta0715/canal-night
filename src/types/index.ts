@@ -8,7 +8,7 @@ export type ContentProps = {
   id: string;
 };
 
-export type UserState = {
+export type UserState<T extends object = object> = {
   width: number;
   height: number;
   displayname: string;
@@ -16,6 +16,7 @@ export type UserState = {
   alignment: Alignment;
   id: string;
   role: "user";
+  custom?: Partial<T>;
 };
 
 export type ActionPosition = {
