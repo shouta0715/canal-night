@@ -25,10 +25,14 @@ type CustomInputProps = {
 };
 export function CustomInputItem({ custom }: CustomInputProps) {
   const store = useNodeStore();
-  const { deleteStoreCustom, updateStoreCustom } = useStore(store, (s) => ({
-    deleteStoreCustom: s.deleteCustom,
-    updateStoreCustom: s.updateCustom,
-  }));
+  const { deleteStoreCustom, updateStoreCustom, setNodes } = useStore(
+    store,
+    (s) => ({
+      deleteStoreCustom: s.deleteCustom,
+      updateStoreCustom: s.updateCustom,
+      setNodes: s.setNodes,
+    })
+  );
   const params = useParams<{ "app-name": string }>();
 
   const [open, setOpen] = React.useState(false);
@@ -48,6 +52,15 @@ export function CustomInputItem({ custom }: CustomInputProps) {
   const onDelete = () => {
     mutateDelete({ appName: params["app-name"], key: custom.key });
     deleteStoreCustom(custom.key);
+    setNodes((ns) => {
+      const newNodes = ns.map((n) => {
+        const { [custom.key]: _, ...newCustoms } = n.data.custom;
+
+        return { ...n, data: { ...n.data, custom: newCustoms } };
+      });
+
+      return newNodes;
+    });
   };
 
   return (

@@ -21,9 +21,10 @@ import { CustomInput as TCustomInput } from "@/features/admin/schema";
 export function CustomInput() {
   const store = useNodeStore();
 
-  const { customs, addStoreCustom } = useStore(store, (s) => ({
+  const { customs, addStoreCustom, setNodes } = useStore(store, (s) => ({
     customs: s.customs,
     addStoreCustom: s.addCustom,
+    setNodes: s.setNodes,
   }));
   const params = useParams<{ "app-name": string }>();
   const [open, setOpen] = React.useState(false);
@@ -34,6 +35,15 @@ export function CustomInput() {
   const submitHandler = (data: TCustomInput) => {
     mutate({ appName: params["app-name"], data });
     addStoreCustom(data);
+    setNodes((ns) => {
+      const newNodes = ns.map((n) => {
+        const newCustoms = { ...n.data.custom, [data.key]: data.defaultValue };
+
+        return { ...n, data: { ...n.data, custom: newCustoms } };
+      });
+
+      return newNodes;
+    });
   };
 
   return (
