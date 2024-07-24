@@ -19,26 +19,16 @@ export function sessionToNode(sessions: UserSession[]): Node<UserSession>[] {
 
 export function getDefaultNode({
   id,
-  width,
-  height,
   assignPosition,
-  displayname,
-  alignment,
-  connections,
-  isStartDevice,
+  ...data
 }: Omit<UserSession, "role">): Node<UserSession> {
   return {
     id,
     type: "session",
     data: {
       id,
-      width,
-      height,
       assignPosition,
-      displayname,
-      alignment,
-      connections,
-      isStartDevice,
+      ...data,
     },
     position: { x: assignPosition.startX, y: assignPosition.startY },
   };
@@ -58,6 +48,7 @@ export const getEdgeDirection = (direction: string): Position => {
       throw new Error("Invalid direction");
   }
 };
+
 export const createEdgeId = ({
   source,
   target,

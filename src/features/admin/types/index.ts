@@ -1,4 +1,5 @@
 import { Position } from "@xyflow/react";
+import { UserCustomInput } from "@/features/admin/schema";
 
 export type Alignment = {
   isLeft: boolean;
@@ -23,6 +24,7 @@ export type UserSession = {
   connections: Connection[];
   alignment: Alignment;
   isStartDevice: boolean;
+  custom: UserCustomInput;
 };
 
 export type EdgeData = {

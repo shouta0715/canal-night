@@ -1,4 +1,5 @@
 import { API_URL } from "@/constant";
+import { CustomInput, DeviceInput } from "@/features/admin/schema";
 import { Mode } from "@/features/admin/store";
 import { Connection } from "@/features/admin/types";
 
@@ -55,14 +56,11 @@ export async function changeSize({
 export const changeDeviceData = async ({
   id,
   appName,
-  ...data
+  data,
 }: {
   id: string;
   appName: string;
-  width: number;
-  height: number;
-  x: number;
-  y: number;
+  data: DeviceInput;
 }) => {
   const res = await fetch(`${API_URL}/${appName}/admin/${id}/device`, {
     method: "POST",
@@ -73,7 +71,7 @@ export const changeDeviceData = async ({
   });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch resize");
+    throw new Error("Failed to fetch device");
   }
 };
 
@@ -140,5 +138,63 @@ export const onDisconnect = async ({
 
   if (!res.ok) {
     throw new Error("Failed to fetch disconnect");
+  }
+};
+
+export const addCustom = async ({
+  data,
+  appName,
+}: {
+  appName: string;
+  data: CustomInput;
+}) => {
+  const res = await fetch(`${API_URL}/${appName}/admin/customs`, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch customs");
+  }
+};
+
+export const deleteCustom = async ({
+  key,
+  appName,
+}: {
+  appName: string;
+  key: string;
+}) => {
+  const res = await fetch(`${API_URL}/${appName}/admin/customs/${key}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch customs");
+  }
+};
+
+export const updateCustom = async ({
+  key,
+  data,
+  appName,
+}: {
+  appName: string;
+  key: string;
+  data: CustomInput;
+}) => {
+  const res = await fetch(`${API_URL}/${appName}/admin/customs/${key}`, {
+    method: "PATCH",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch customs");
   }
 };

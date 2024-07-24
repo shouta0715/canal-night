@@ -3,10 +3,12 @@ import { useMutation } from "@tanstack/react-query";
 import { ReadonlyURLSearchParams } from "next/navigation";
 import { useCallback, useId } from "react";
 import { useForm } from "react-hook-form";
+import { useStore } from "zustand";
 import { changeNameActions } from "@/actions/cheange-name";
 
 import { changeDeviceData } from "@/features/admin/api";
-import { DeviceInput, deviceSchema } from "@/features/admin/schema";
+import { useNodeStore } from "@/features/admin/components/providers";
+import { DeviceInput, createUserCustomSchema } from "@/features/admin/schema";
 import { UserSession } from "@/features/admin/types";
 
 type PanelItemProps = {
@@ -27,19 +29,15 @@ export function usePanelItem({
   const { mutateAsync, isPending } = useMutation({
     mutationFn: changeDeviceData,
   });
+  const store = useNodeStore();
 
   const action = changeNameActions.bind(null, appName, session.id);
   const id = useId();
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    reset,
-    getValues,
-    formState: { isDirty, isSubmitting, errors },
-  } = useForm<DeviceInput>({
-    resolver: valibotResolver(deviceSchema),
+  const { customs } = useStore(store, (s) => ({ customs: s.customs }));
+
+  const methods = useForm<DeviceInput>({
+    resolver: valibotResolver(createUserCustomSchema(customs)),
 
     defaultValues: {
       width: session.width,
@@ -47,8 +45,19 @@ export function usePanelItem({
       x: Number(session.assignPosition.startX.toFixed(0)),
       y: Number(session.assignPosition.startY.toFixed(0)),
       isStartDevice: session.isStartDevice,
+      custom: session.custom,
     },
   });
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    getValues,
+    control,
+    formState: { isDirty, isSubmitting, errors },
+  } = methods;
 
   const onClickHandler = useCallback(() => {
     const newSearchParams = new URLSearchParams(searchParams);
@@ -66,7 +75,7 @@ export function usePanelItem({
       await mutateAsync({
         id: session.id,
         appName,
-        ...data,
+        data,
       });
       reset(data);
     } catch (error) {
@@ -97,5 +106,8 @@ export function usePanelItem({
     register,
     onChangeIsStartDevice,
     getValues,
+    customs,
+    control,
+    methods,
   };
 }

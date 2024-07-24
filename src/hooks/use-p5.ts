@@ -5,24 +5,21 @@ import { useDebounce, useMode, useSocket } from "@/hooks";
 import { UserState } from "@/types";
 import { fetchResize } from "@/utils";
 
-type UseP5Props<T> = {
+type UseP5Props<T, C extends object> = {
   id: string;
   appName: string;
   callback: (p: p5, data: T) => void;
-  onJoin?: (state: UserState) => void;
+  onJoin?: (state: UserState<C>) => void;
   initialMode: Mode;
 };
 
 const width = window.innerWidth;
 const height = window.innerHeight;
 
-export function useP5<T extends Record<string, unknown>>({
-  id,
-  callback,
-  onJoin,
-  appName,
-  initialMode,
-}: UseP5Props<T>) {
+export function useP5<
+  T extends Record<string, unknown>,
+  C extends object = object,
+>({ id, callback, onJoin, appName, initialMode }: UseP5Props<T, C>) {
   if (typeof window === "undefined") throw new Error("window is not defined");
   const canvasRef = useRef<HTMLDivElement>(null);
   const p5Ref = useRef<p5 | null>(null);
@@ -41,7 +38,7 @@ export function useP5<T extends Record<string, unknown>>({
       }
 
       if (data?.action === "join" && data?.state) {
-        onJoin?.(data.state as UserState);
+        onJoin?.(data.state as UserState<C>);
       }
 
       const p5Instance = p5Ref.current;

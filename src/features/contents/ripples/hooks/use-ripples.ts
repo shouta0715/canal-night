@@ -6,17 +6,44 @@ import { useEffect, useRef } from "react";
 import { useP5 } from "@/hooks/use-p5";
 import { ContentProps } from "@/types";
 
-type Data = {
-  x: number;
-  y: number;
-  senderId: string;
-  action: "position";
-};
+type Data =
+  | {
+      x: number;
+      y: number;
+      senderId: string;
+      action: "interaction";
+    }
+  | {
+      action: "device";
+      custom: { color: string };
+    };
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } {
+  const hexWithoutHash = hex.replace(/^#/, "");
+
+  let normalizedHex = hexWithoutHash;
+  if (normalizedHex.length === 3) {
+    normalizedHex = normalizedHex
+      .split("")
+      .map((char) => char + char)
+      .join("");
+  }
+
+  // 16進数を整数に変換
+  const bigint = parseInt(normalizedHex, 16);
+  const r = Math.floor(bigint / (256 * 256));
+  const g = Math.floor((bigint / 256) % 256);
+  const b = Math.floor(bigint % 256);
+
+  return { r, g, b };
+}
 
 export const useRipples = ({ id, initialMode }: ContentProps) => {
   const rippleRef = useRef<
     { x: number; y: number; radius: number; alpha: number }[]
   >([]);
+
+  const colorRef = useRef({ r: 0, g: 0, b: 0 });
 
   const {
     onResize,
@@ -27,20 +54,33 @@ export const useRipples = ({ id, initialMode }: ContentProps) => {
     height,
     mode,
     isConnecting,
-  } = useP5<Data>({
+  } = useP5<Data, { color: string }>({
     callback: (_, data) => {
-      if (data.action === "position") return;
-      const ripple = {
-        ...data,
-        radius: 0,
-        alpha: 255,
-      };
+      if (data.action === "device") {
+        const { r, g, b } = hexToRgb(data.custom.color);
+        colorRef.current = { r, g, b };
 
-      rippleRef.current.push(ripple);
+        return;
+      }
+      if (data.action === "interaction") {
+        if (data.senderId === id) return;
+        const ripple = {
+          ...data,
+          radius: 0,
+          alpha: 255,
+        };
+
+        rippleRef.current.push(ripple);
+      }
     },
     id,
     appName: "ripples",
     initialMode,
+    onJoin: (state) => {
+      const { custom } = state;
+      const { r, g, b } = hexToRgb(custom?.color || "#4DD7E3");
+      colorRef.current = { r, g, b };
+    },
   });
 
   useEffect(() => {
@@ -64,7 +104,8 @@ export const useRipples = ({ id, initialMode }: ContentProps) => {
         // eslint-disable-next-line no-plusplus
         for (let i = ripples.length - 1; i >= 0; i--) {
           const r = ripples[i];
-          p5Instance.stroke(77, 215, 227, r.alpha);
+          const color = colorRef.current;
+          p5Instance.stroke(color.r, color.g, color.b, r.alpha);
           p5Instance.strokeWeight(4);
           p5Instance.ellipse(r.x, r.y, r.radius * 10, r.radius * 10);
 
