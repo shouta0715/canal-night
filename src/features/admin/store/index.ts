@@ -11,8 +11,10 @@ import {
   applyNodeChanges,
 } from "@xyflow/react";
 import { atomWithReset } from "jotai/utils";
+import { toast } from "sonner";
 import { createStore } from "zustand";
 import { EDGE_TYPE } from "@/features/admin/constant";
+import { CustomInput, CustomsInput } from "@/features/admin/schema";
 import { EdgeData, UserSession } from "@/features/admin/types";
 import {
   createEdgeId,
@@ -49,9 +51,18 @@ export type RFState = {
   ) => void;
 
   getNode: (id: string) => Node<UserSession> | undefined;
+
+  // customs
+  customs: CustomsInput;
+  addCustom: (custom: CustomInput) => void;
+  deleteCustom: (key: string) => void;
+  updateCustom: (key: string, custom: CustomInput) => void;
 };
 
-export const createNodeStore = (initialProps: UserSession[]) => {
+export const createNodeStore = (
+  initialProps: UserSession[],
+  initialCustoms: CustomsInput
+) => {
   return createStore<RFState>()((set, get) => ({
     // Node
     nodes: sessionToNode(initialProps),
@@ -205,6 +216,41 @@ export const createNodeStore = (initialProps: UserSession[]) => {
       };
 
       await cb(deletedEdge, newEdges);
+    },
+
+    // customs
+    customs: initialCustoms,
+    addCustom: (custom) => {
+      const isAlreadyExist = get().customs.some((c) => c.key === custom.key);
+      if (isAlreadyExist) {
+        toast.error("すでに存在するカスタムデータです");
+
+        return;
+      }
+      set((state) => {
+        return {
+          customs: [...state.customs, custom],
+        };
+      });
+    },
+    deleteCustom: (key) => {
+      const newCustoms = get().customs.filter((custom) => custom.key !== key);
+
+      set(() => ({
+        customs: newCustoms,
+      }));
+    },
+
+    updateCustom: (key, custom) => {
+      const newCustoms = get().customs.map((c) => {
+        if (c.key !== key) return c;
+
+        return custom;
+      });
+
+      set(() => ({
+        customs: newCustoms,
+      }));
     },
   }));
 };
