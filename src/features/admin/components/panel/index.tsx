@@ -11,9 +11,11 @@ import { useAdminPanel } from "@/features/admin/hooks/use-admin-panel";
 import { UserSession } from "@/features/admin/types";
 
 const generateKey = (data: UserSession) => {
-  const { assignPosition, width, height } = data;
+  const { assignPosition, width, height, custom } = data;
 
-  return `${data.id}-${assignPosition.startX}-${assignPosition.startY}-${width}-${height}`;
+  const cs = custom ? Object.keys(custom).join("-") : "";
+
+  return `${data.id}-${assignPosition.startX}-${assignPosition.startY}-${width}-${height}-${cs}`;
 };
 
 export function AdminPanel() {
