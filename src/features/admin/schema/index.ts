@@ -1,5 +1,8 @@
 import {
+  BooleanSchema,
+  CustomSchema,
   InferInput,
+  StringSchema,
   array,
   boolean,
   custom,
@@ -11,8 +14,12 @@ import {
   object,
   picklist,
   pipe,
+  record,
+  safeParse,
   string,
+  transform,
   trim,
+  union,
   variant,
 } from "valibot";
 
@@ -53,28 +60,42 @@ const labelSchema = pipe(
   maxLength(30, "30文字以下の文字列を入力してください。")
 );
 
+const stringSchema = object({
+  key: keySchema,
+  type: picklist(["string"]),
+  label: labelSchema,
+  defaultValue: string("初期値の文字列を入力してください。"),
+});
+
+const numberSchema = object({
+  key: keySchema,
+  type: picklist(["number"]),
+  label: labelSchema,
+  defaultValue: pipe(
+    string(),
+    transform(Number),
+    number("数値を入力してください。")
+  ),
+});
+
+const booleanSchema = object({
+  key: keySchema,
+  type: picklist(["boolean"]),
+  label: labelSchema,
+  defaultValue: boolean(),
+});
+
 export const customSchema = variant("type", [
-  object({
-    key: keySchema,
-    type: picklist(["string"]),
-    label: labelSchema,
-    defaultValue: string("初期値の文字列を入力してください。"),
-  }),
-  object({
-    key: keySchema,
-    type: picklist(["number"]),
-    label: labelSchema,
-    defaultValue: number("初期値の数値を入力してください。"),
-  }),
-  object({
-    key: keySchema,
-    type: picklist(["boolean"]),
-    label: labelSchema,
-    defaultValue: boolean(),
-  }),
+  stringSchema,
+  numberSchema,
+  booleanSchema,
 ]);
 
 export const customsSchema = array(customSchema);
+const userCustomSchema = record(
+  string(),
+  union([string(), number(), boolean()])
+);
 
 export const deviceSchema = object({
   width: pipe(
@@ -96,8 +117,47 @@ export const deviceSchema = object({
     integer("整数を入力してください。")
   ),
   isStartDevice: boolean(),
+  custom: userCustomSchema,
 });
 
 export type DeviceInput = InferInput<typeof deviceSchema>;
 export type CustomInput = InferInput<typeof customSchema>;
 export type CustomsInput = InferInput<typeof customsSchema>;
+export type UserCustomInput = InferInput<typeof userCustomSchema>;
+
+export const createUserCustomSchema = <T extends CustomsInput>(customs: T) => {
+  const resultSchema = object(
+    customs.reduce(
+      (acc, c) => {
+        if (c.type === "string") {
+          acc[c.key] = string("文字列を入力してください");
+        }
+
+        if (c.type === "number") {
+          acc[c.key] = custom((v) => {
+            const parsed = safeParse(number(), Number(v));
+
+            return parsed.success;
+          }, "数値を入力してください");
+        }
+
+        if (c.type === "boolean") {
+          acc[c.key] = boolean("真偽値を入力してください");
+        }
+
+        return acc;
+      },
+      {} as Record<
+        string,
+        | StringSchema<"文字列を入力してください">
+        | CustomSchema<unknown, "数値を入力してください">
+        | BooleanSchema<"真偽値を入力してください">
+      >
+    )
+  );
+
+  return object({
+    ...deviceSchema.entries,
+    custom: resultSchema,
+  });
+};
