@@ -8,6 +8,7 @@ import { Direction, UserState } from "@/types";
 export type ConnectionAction = {
   action: "connection";
   alignment: Alignment;
+  sourceState: UserState;
 };
 
 export type OverAction = {

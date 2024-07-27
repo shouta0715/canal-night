@@ -15,9 +15,15 @@ type UseRiverBallProps = {
   data: RiverBallData | null;
   state?: UserState;
   alignment: Alignment;
+  alignmentStates: { left: UserState | null; right: UserState | null };
 };
 
-export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
+export function useRiverBall({
+  data,
+  state,
+  alignment,
+  alignmentStates,
+}: UseRiverBallProps) {
   const matterEngine = useRef<Matter.Engine | null>(null);
   const { slug } = useParams<{ slug: string }>();
   const ref = useRef<HTMLDivElement>(null);
@@ -121,36 +127,45 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
     }
   }, [addBallHandler, data]);
 
-  const renderRectangles = useCallback((world: Matter.World) => {
-    const { Bodies, Composite } = Matter;
+  const renderRectangles = useCallback(
+    (
+      world: Matter.World,
+      isLeft: boolean,
+      isRight: boolean,
+      leftState: UserState | null,
+      _: UserState | null
+    ) => {
+      const { Bodies, Composite } = Matter;
 
-    const { w, h } = sizeRef.current;
-    const width = w * 0.7;
+      const { w, h: __ } = sizeRef.current;
 
-    const spacing = Math.max(100, h / 7);
-    const recHeight = 20;
-    const num = Math.floor(h / spacing);
+      const rectHeight = 20;
+      const angle = Math.PI * 0.04;
+      const base = 200;
+      const rectWidth = isRight ? w * 0.7 : w;
 
-    const rects = Array.from({ length: num }, (_, i) => {
-      const isLast = i === num - 1;
-      const x = i % 2 === 0 ? width / 2 : width;
-      const y = (i + 1) * spacing;
+      const centralHeight = (rectWidth * Math.tan(angle)) / 2;
+      const prevBottom = leftState
+        ? (leftState.width / 2) * Math.tan(angle)
+        : 0;
 
-      const angle = Math.PI * 0.04 * (i % 2 === 0 ? 1 : -1);
+      // y座標の計算
+      const y = isLeft ? base : base + prevBottom + centralHeight;
 
-      return Bodies.rectangle(x, y, isLast ? w : width, recHeight, {
+      const rect = Bodies.rectangle(rectWidth / 2, y, rectWidth, rectHeight, {
         isStatic: true,
         label: "rect",
-        angle: isLast ? 0 : angle,
+        angle,
         density: 0.001, // ボールを軽く設定
         friction: 0.01, // 転がり摩擦を低く設定
         frictionAir: 0.01, // 空気抵抗を低く設定
         restitution: 0.6, // 反発係数
       });
-    });
 
-    Composite.add(world, rects);
-  }, []);
+      Composite.add(world, rect);
+    },
+    []
+  );
 
   const onResize = useCallback(() => {
     if (!render.current) return;
@@ -196,7 +211,6 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
         height: h,
         wireframes: true,
         background: "#000",
-        pixelRatio: window.devicePixelRatio,
       },
     });
 
@@ -208,7 +222,13 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
 
     Runner.run(runner.current, matterEngine.current);
 
-    renderRectangles(world);
+    renderRectangles(
+      world,
+      alignment.isLeft,
+      alignment.isRight,
+      alignmentStates.left,
+      alignmentStates.right
+    );
     renderWall(world, alignment.isLeft, alignment.isRight);
 
     Events.on(matterEngine.current, "afterUpdate", () => {
@@ -238,7 +258,7 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
           mutate({
             x: ball.position.x,
             id: slug,
-            y: ball.position.y,
+            y: ball.position.y - 100,
             direction: ball.position.x < 0 ? "left" : "right",
             data: { src: ball.render.sprite.texture },
           });
@@ -269,8 +289,11 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
       runner.current = null;
     };
   }, [
+    alignment,
     alignment.isLeft,
     alignment.isRight,
+    alignmentStates.left,
+    alignmentStates.right,
     mutate,
     renderBall,
     renderRectangles,
