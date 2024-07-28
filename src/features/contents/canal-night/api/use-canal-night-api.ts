@@ -20,6 +20,7 @@ export type OverAction = {
   from: Direction;
   to: Direction;
   source: string;
+  data: { src: string; velocity: { x: number; y: number } };
   action: "over";
 };
 
@@ -80,7 +81,7 @@ const onOver = async ({
   x: number;
   y: number;
   direction: Direction;
-  data: { src: string };
+  data: { src: string; velocity: { x: number; y: number } };
 }) => {
   const res = await fetch(`${API_URL}/canal-night/${id}/over`, {
     method: "POST",
@@ -98,9 +99,9 @@ const onOver = async ({
 };
 
 export function useMutateOver() {
-  const { mutate } = useMutation({
+  const mutate = useMutation({
     mutationFn: onOver,
   });
 
-  return { mutate };
+  return { ...mutate };
 }

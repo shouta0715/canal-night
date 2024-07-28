@@ -13,7 +13,6 @@ type RiverBallContentsProps = {
   data: RiverBallData;
   state?: UserState;
   alignment: Alignment;
-  alignmentStates: { left: UserState | null; right: UserState | null };
 };
 
 export function RiverBallContents(props: RiverBallContentsProps) {

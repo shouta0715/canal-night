@@ -19,13 +19,7 @@ export default function RiverBall() {
   const params = useParams<{ slug: string }>();
   const [state, setState] = React.useState<UserState>();
   const [alignment, setAlignment] = React.useState<Alignment>(initialAlignment);
-  const [alignmentStates, setAlignmentStates] = React.useState<{
-    left: UserState | null;
-    right: UserState | null;
-  }>({
-    left: null,
-    right: null,
-  });
+
   const { lastJsonMessage } = useRiverBallAPI({
     appName: "canal-night",
     id: params.slug,
@@ -37,11 +31,6 @@ export default function RiverBall() {
 
       if (data.action === "connection") {
         setAlignment(data.alignment);
-
-        setAlignmentStates({
-          left: data.alignment.isLeft ? null : data.sourceState,
-          right: data.alignment.isRight ? null : data.sourceState,
-        });
       }
     },
   });
@@ -50,7 +39,6 @@ export default function RiverBall() {
     <div>
       <RiverBallContents
         alignment={alignment}
-        alignmentStates={alignmentStates}
         data={lastJsonMessage}
         state={state}
       />
