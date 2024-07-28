@@ -5,13 +5,15 @@
 import React from "react";
 import { Alignment } from "@/features/admin/types";
 
-import { RiverBallData } from "@/features/contents/canal-night/api/use-canal-night-api";
+import {
+  AppState,
+  RiverBallData,
+} from "@/features/contents/canal-night/api/use-canal-night-api";
 import { useRiverBall } from "@/features/contents/canal-night/hooks/use-river-ball";
-import { UserState } from "@/types";
 
 type RiverBallContentsProps = {
   data: RiverBallData;
-  state?: UserState;
+  state?: AppState;
   alignment: Alignment;
 };
 

@@ -5,14 +5,21 @@ import { Alignment } from "@/features/admin/types";
 import { useSocket } from "@/hooks";
 import { Direction, UserState } from "@/types";
 
+export type AppState = UserState<{
+  wall_distance_r: string;
+  wall_distance_l: string;
+  wall_distance_t: string;
+  wall_distance_b: string;
+}>;
+
 export type ConnectionAction = {
   action: "connection";
   alignment: Alignment;
-  sourceState: UserState;
+  sourceState: AppState;
 };
 
 export type OverAction = {
-  sender: UserState;
+  sender: AppState;
   x: number;
   y: number;
   id: string;
@@ -26,12 +33,12 @@ export type OverAction = {
 
 export type JoinAction = {
   action: "join";
-  state: UserState;
+  state: AppState;
 };
 
 export type DeviceAction = {
   action: "device";
-} & UserState;
+} & AppState;
 
 export type ModeAction = {
   action: "mode";

@@ -4,9 +4,11 @@ import { useParams } from "next/navigation";
 import React from "react";
 import { Alignment } from "@/features/admin/types";
 
-import { useRiverBallAPI } from "@/features/contents/canal-night/api/use-canal-night-api";
+import {
+  AppState,
+  useRiverBallAPI,
+} from "@/features/contents/canal-night/api/use-canal-night-api";
 import { RiverBallContents } from "@/features/contents/canal-night/components/river-ball-content";
-import { UserState } from "@/types";
 
 const initialAlignment: Alignment = {
   isBottom: true,
@@ -17,7 +19,7 @@ const initialAlignment: Alignment = {
 
 export default function RiverBall() {
   const params = useParams<{ slug: string }>();
-  const [state, setState] = React.useState<UserState>();
+  const [state, setState] = React.useState<AppState>();
   const [alignment, setAlignment] = React.useState<Alignment>(initialAlignment);
 
   const { lastJsonMessage } = useRiverBallAPI({
@@ -31,6 +33,10 @@ export default function RiverBall() {
 
       if (data.action === "connection") {
         setAlignment(data.alignment);
+      }
+
+      if (data.action === "device") {
+        setState(data);
       }
     },
   });

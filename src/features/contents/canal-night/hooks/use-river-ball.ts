@@ -3,16 +3,16 @@ import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef } from "react";
 import { Alignment } from "@/features/admin/types";
 import {
+  AppState,
   RiverBallData,
   useMutateOver,
 } from "@/features/contents/canal-night/api/use-canal-night-api";
-import { UserState } from "@/types";
 
 const IMAGE_URL = "http://localhost:8787/canal-night/images";
 
 type UseRiverBallProps = {
   data: RiverBallData | null;
-  state?: UserState;
+  state?: AppState;
   alignment: Alignment;
 };
 
@@ -72,14 +72,14 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
       const { Bodies, Composite } = Matter;
       const { w, h } = sizeRef.current;
 
-      const left = Bodies.rectangle(20, h / 2, 40, h * 10, {
-        isStatic: true,
-        label: "wall",
-        render: {
-          strokeStyle: "#fff",
-        },
-      });
-      const right = Bodies.rectangle(w - 20, h / 2, 40, h * 10, {
+      const custom = state?.custom;
+
+      const ld = Number(custom?.wall_distance_l) || 0;
+      const rd = Number(custom?.wall_distance_r) || 0;
+      const td = Number(custom?.wall_distance_t) || 0;
+      const bd = Number(custom?.wall_distance_b) || 0;
+
+      const left = Bodies.rectangle(20 - ld, h / 2, 40, h * 10, {
         isStatic: true,
         label: "wall",
         render: {
@@ -87,7 +87,7 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
         },
       });
 
-      const top = Bodies.rectangle(w / 2, 0, w, 5, {
+      const right = Bodies.rectangle(w - 20 + rd, h / 2, 40, h * 10, {
         isStatic: true,
         label: "wall",
         render: {
@@ -95,7 +95,15 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
         },
       });
 
-      const bottom = Bodies.rectangle(w / 2, h, w, 5, {
+      const top = Bodies.rectangle(w / 2, 0 - td, w * 10, 5, {
+        isStatic: true,
+        label: "wall",
+        render: {
+          strokeStyle: "#fff",
+        },
+      });
+
+      const bottom = Bodies.rectangle(w / 2, h + bd, w * 10, 5, {
         isStatic: true,
         label: "wall",
         render: {
@@ -110,7 +118,7 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
         ...(isBottom ? [bottom] : []),
       ]);
     },
-    []
+    [state?.custom]
   );
 
   const addBallHandler = useCallback(
@@ -152,8 +160,6 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
     }
 
     if (data.action === "over") {
-      // 壁より外側にあるかどうかを判定
-
       addBallHandler(data.x, data.y, data.data.src, data.data.velocity);
     }
   }, [addBallHandler, data]);
@@ -200,7 +206,7 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
       options: {
         width: w,
         height: h,
-        wireframes: true,
+        wireframes: false,
         background: "#000",
       },
     });
@@ -231,6 +237,12 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
         const { velocity } = ball;
         const balXlDirection = velocity.x < 0 ? "left" : "right";
         const ballYDirection = velocity.y < 0 ? "top" : "bottom";
+
+        const custom = state?.custom;
+        const ld = Number(custom?.wall_distance_l) || 0;
+        const rd = Number(custom?.wall_distance_r) || 0;
+        const td = Number(custom?.wall_distance_t) || 0;
+        const bd = Number(custom?.wall_distance_b) || 0;
 
         const isOverX =
           balXlDirection === "left"
@@ -269,13 +281,13 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
 
         const isOverAll =
           balXlDirection === "left"
-            ? ball.position.x + 100 < 0
-            : ball.position.x - 100 > w;
+            ? ball.position.x + 100 < 0 - ld
+            : ball.position.x - 100 > w + rd;
 
         const isOverAllY =
           ballYDirection === "top"
-            ? ball.position.y + 100 < 0
-            : ball.position.y - 100 > h;
+            ? ball.position.y + 100 < 0 - td
+            : ball.position.y - 100 > h + bd;
 
         if (isOverAll || isOverAllY) {
           Matter.Composite.remove(world, ball);
