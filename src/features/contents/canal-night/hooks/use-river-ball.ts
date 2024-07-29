@@ -41,7 +41,7 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
   };
 
   const renderBall = useCallback((x: number, y: number, id?: string) => {
-    const scale = id ? 0.35 : 1;
+    const scale = id ? 0.65 : 1;
     const ball = Matter.Bodies.circle(x, y, 100, {
       restitution: 1.0, // 弾性係数を1.0に設定
       friction: 0, // 摩擦を0に設定
