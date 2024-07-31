@@ -1,8 +1,8 @@
 import dynamic from "next/dynamic";
 import React from "react";
 
-const DynamicRiverBall = dynamic(
-  () => import("@/features/contents/river-ball/components/"),
+const DynamicCanalNight = dynamic(
+  () => import("@/features/contents/canal-night/components"),
   {
     ssr: false,
   }
@@ -11,7 +11,7 @@ const DynamicRiverBall = dynamic(
 export default function Page() {
   return (
     <div>
-      <DynamicRiverBall />
+      <DynamicCanalNight />
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { registerActions } from "@/actions/register";
 import { Button } from "@/components/ui/button";
 
 export default function Page() {
-  const action = registerActions.bind(null, "river-ball");
+  const action = registerActions.bind(null, "canal-night");
 
   return (
     <div className="container mx-auto p-4 text-center">
