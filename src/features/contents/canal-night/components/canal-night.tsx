@@ -10,7 +10,7 @@ import {
   AppState,
   RiverBallData,
 } from "@/features/contents/canal-night/api/use-canal-night-api";
-import { useRiverBall } from "@/features/contents/canal-night/hooks/use-river-ball";
+import { useCanalNight } from "@/features/contents/canal-night/hooks/use-canal-night";
 
 type RiverBallContentsProps = {
   data: RiverBallData;
@@ -18,8 +18,8 @@ type RiverBallContentsProps = {
   alignment: Alignment;
 };
 
-export function RiverBallContents({ state, ...props }: RiverBallContentsProps) {
-  const { ref, fadeX, setFadeX } = useRiverBall({ ...props, state });
+export function CanalNight({ state, ...props }: RiverBallContentsProps) {
+  const { ref, fadeX, setFadeX } = useCanalNight({ ...props, state });
 
   return (
     <div>

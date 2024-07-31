@@ -18,7 +18,7 @@ type UseRiverBallProps = {
 
 const MAX_BALLS = 10;
 
-export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
+export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
   const matterEngine = useRef<Matter.Engine | null>(null);
   const { slug } = useParams<{ slug: string }>();
   const ref = useRef<HTMLDivElement>(null);

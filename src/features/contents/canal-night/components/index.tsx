@@ -8,7 +8,7 @@ import {
   AppState,
   useRiverBallAPI,
 } from "@/features/contents/canal-night/api/use-canal-night-api";
-import { RiverBallContents } from "@/features/contents/canal-night/components/river-ball-content";
+import { CanalNight } from "@/features/contents/canal-night/components/canal-night";
 
 const initialAlignment: Alignment = {
   isBottom: true,
@@ -43,11 +43,7 @@ export default function RiverBall() {
 
   return (
     <div>
-      <RiverBallContents
-        alignment={alignment}
-        data={lastJsonMessage}
-        state={state}
-      />
+      <CanalNight alignment={alignment} data={lastJsonMessage} state={state} />
     </div>
   );
 }
