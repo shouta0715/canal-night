@@ -2,6 +2,7 @@
 
 "use client";
 
+import { motion } from "framer-motion";
 import React from "react";
 import { Alignment } from "@/features/admin/types";
 
@@ -17,11 +18,33 @@ type RiverBallContentsProps = {
   alignment: Alignment;
 };
 
-export function RiverBallContents(props: RiverBallContentsProps) {
-  const { ref } = useRiverBall(props);
+export function RiverBallContents({ state, ...props }: RiverBallContentsProps) {
+  const { ref, fadeX, setFadeX } = useRiverBall({ ...props, state });
 
   return (
     <div>
+      {state?.isStartDevice && fadeX && (
+        <motion.div
+          key={fadeX.timestamp}
+          animate={{
+            opacity: [0, 1, 0],
+          }}
+          className="absolute bottom-0 "
+          onAnimationEnd={() => {
+            setFadeX(null);
+          }}
+          style={{
+            x: fadeX.x - 100,
+          }}
+          transition={{
+            times: [0, 0.25, 1],
+            duration: 2,
+          }}
+        >
+          <div className="size-[300px] bg-gradient-to-t from-white/80 via-white/30 to-transparent" />
+        </motion.div>
+      )}
+
       <div ref={ref} />
     </div>
   );

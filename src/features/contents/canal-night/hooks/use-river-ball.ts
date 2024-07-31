@@ -1,6 +1,6 @@
 import Matter, { Events, Render } from "matter-js";
 import { useParams } from "next/navigation";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Alignment } from "@/features/admin/types";
 import {
   AppState,
@@ -29,13 +29,17 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
     h: window.innerHeight,
   });
   const ballListRef = useRef<Matter.Body[]>([]);
+  const [fadeX, setFadeX] = useState<{
+    x: number;
+    timestamp: number;
+  } | null>(null);
 
   const { mutate } = useMutateOver();
   const sendedBallListRef = useRef<string[]>([]);
 
   const getRandomVelocity = () => {
     const randomX = Math.random() * 20 - 10;
-    const randomY = Math.random() + 1;
+    const randomY = Math.random() * -20 - 10;
 
     return { x: randomX, y: randomY };
   };
@@ -43,9 +47,9 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
   const renderBall = useCallback((x: number, y: number, id?: string) => {
     const scale = id ? 0.65 : 1;
     const ball = Matter.Bodies.circle(x, y, 100, {
-      restitution: 1.0, // 弾性係数を1.0に設定
-      friction: 0, // 摩擦を0に設定
-      frictionAir: 0, // 空気抵抗を0に設定
+      restitution: 1.0,
+      friction: 0,
+      frictionAir: 0,
       render: {
         sprite: id
           ? {
@@ -95,7 +99,7 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
         },
       });
 
-      const top = Bodies.rectangle(w / 2, 0 - td, w * 10, 5, {
+      const top = Bodies.rectangle(w / 2, 0 - td, w * 10, 40, {
         isStatic: true,
         label: "wall",
         render: {
@@ -103,7 +107,7 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
         },
       });
 
-      const bottom = Bodies.rectangle(w / 2, h + bd, w * 10, 5, {
+      const bottom = Bodies.rectangle(w / 2, h + bd, w * 10, 40, {
         isStatic: true,
         label: "wall",
         render: {
@@ -133,7 +137,7 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
 
       const ball = renderBall(x, y, id);
 
-      matterEngine.current.gravity.y = 0.1;
+      matterEngine.current.gravity.y = 0.001;
 
       Matter.Composite.add(world, ball);
 
@@ -156,7 +160,10 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
 
     if (data.action === "uploaded") {
       const x = Math.random() * (window.innerWidth - 400) + 200;
-      addBallHandler(x, 100, data.id);
+      addBallHandler(x, window.innerWidth, data.id);
+      const time = Date.now();
+
+      setFadeX({ x, timestamp: time });
     }
 
     if (data.action === "over") {
@@ -331,5 +338,5 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
     state,
   ]);
 
-  return { ref, addBallHandler };
+  return { ref, addBallHandler, fadeX, setFadeX };
 }

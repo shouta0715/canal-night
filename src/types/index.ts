@@ -16,6 +16,7 @@ export type UserState<T extends object = object> = {
   alignment: Alignment;
   id: string;
   role: "user";
+  isStartDevice: boolean;
   custom?: Partial<T>;
 };
 
