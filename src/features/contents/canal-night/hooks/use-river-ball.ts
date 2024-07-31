@@ -39,7 +39,7 @@ export function useRiverBall({ data, state, alignment }: UseRiverBallProps) {
 
   const getRandomVelocity = () => {
     const randomX = Math.random() * 20 - 10;
-    const randomY = Math.random() * -20 - 10;
+    const randomY = Math.random() * 2 * -1;
 
     return { x: randomX, y: randomY };
   };
