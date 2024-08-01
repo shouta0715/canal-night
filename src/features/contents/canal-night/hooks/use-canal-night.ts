@@ -44,26 +44,34 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
     return { x: randomX, y: randomY };
   };
 
-  const renderBall = useCallback((x: number, y: number, id?: string) => {
-    const scale = id ? 0.65 : 1;
-    const ball = Matter.Bodies.circle(x, y, 100, {
-      restitution: 1.0,
-      friction: 0,
-      frictionAir: 0,
-      render: {
-        sprite: id
-          ? {
-              texture: `${IMAGE_URL}/${id}`,
-              xScale: scale,
-              yScale: scale,
-            }
-          : undefined,
-      },
-      label: `ball+${id}`,
-    });
+  const renderBall = useCallback(
+    (x: number, y: number, id?: string) => {
+      // 150の画像が来る。
+      const base = 150;
+      // ボールの大きさは100pxにしたい
+      const ballSize = 100 * (state?.custom?.scale || 1);
+      const scale = ballSize / base;
 
-    return ball;
-  }, []);
+      const ball = Matter.Bodies.circle(x, y, ballSize, {
+        restitution: 1.0,
+        friction: 0,
+        frictionAir: 0,
+        render: {
+          sprite: id
+            ? {
+                texture: `${IMAGE_URL}/${id}`,
+                xScale: scale,
+                yScale: scale,
+              }
+            : undefined,
+        },
+        label: `ball+${id}`,
+      });
+
+      return ball;
+    },
+    [state?.custom?.scale]
+  );
 
   const renderWall = useCallback(
     (

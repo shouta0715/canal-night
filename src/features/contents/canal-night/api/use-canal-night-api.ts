@@ -10,6 +10,7 @@ export type AppState = UserState<{
   wall_distance_l: string;
   wall_distance_t: string;
   wall_distance_b: string;
+  scale: number;
 }>;
 
 export type ConnectionAction = {
