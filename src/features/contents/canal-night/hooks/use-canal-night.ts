@@ -46,11 +46,15 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
   };
 
   const renderBall = useCallback(
-    (x: number, y: number, id?: string) => {
+    (x: number, y: number, id?: string, randomSize?: number) => {
       // 150の画像が来る。
       const base = 150;
       // ボールの大きさは100pxにしたい
-      const ballSize = 100 * (state?.custom?.scale || 1);
+
+      // ボールのサイズを 80 ~ 120 の間でランダムにする
+      const randomBallSize = randomSize || Math.random() * 40 + 80;
+
+      const ballSize = randomBallSize * (state?.custom?.scale || 1);
       const scale = ballSize / base;
 
       const ball = Matter.Bodies.circle(x, y, ballSize, {
@@ -66,7 +70,7 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
               }
             : undefined,
         },
-        label: `ball+${id}`,
+        label: `ball+${id}+${ballSize}`,
       });
 
       return ball;
@@ -96,7 +100,7 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
         isStatic: true,
         label: "wall",
         render: {
-          strokeStyle: "#fff",
+          fillStyle: "#000",
         },
       });
 
@@ -104,7 +108,7 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
         isStatic: true,
         label: "wall",
         render: {
-          strokeStyle: "#fff",
+          fillStyle: "#000",
         },
       });
 
@@ -112,7 +116,7 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
         isStatic: true,
         label: "wall",
         render: {
-          strokeStyle: "#fff",
+          fillStyle: "#000",
         },
       });
 
@@ -120,7 +124,7 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
         isStatic: true,
         label: "wall",
         render: {
-          strokeStyle: "#fff",
+          fillStyle: "#000",
         },
       });
 
@@ -139,14 +143,15 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
       x: number,
       y: number,
       id?: string,
-      velocity?: { x: number; y: number }
+      velocity?: { x: number; y: number },
+      size?: number
     ) => {
       if (!matterEngine.current) return;
       const { world } = matterEngine.current;
 
-      const ball = renderBall(x, y, id);
+      const ball = renderBall(x, y, id, size);
 
-      matterEngine.current.gravity.y = 0.001;
+      matterEngine.current.gravity.y = 0;
 
       Matter.Composite.add(world, ball);
 
@@ -176,7 +181,13 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
     }
 
     if (data.action === "over") {
-      addBallHandler(data.x, data.y, data.data.src, data.data.velocity);
+      addBallHandler(
+        data.x,
+        data.y,
+        data.data.src,
+        data.data.velocity,
+        data.data.size
+      );
     }
   }, [addBallHandler, data]);
 
@@ -205,6 +216,27 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
       window.removeEventListener("resize", onResize);
     };
   }, [onResize]);
+
+  useEffect(() => {
+    const { world } = matterEngine.current || {};
+
+    if (!world) return;
+    const timer = setInterval(() => {
+      const balls = world.bodies.filter((body) => body.label.includes("ball"));
+
+      balls.forEach((ball) => {
+        const forceMagnitude = 0.02 * ball.mass;
+        const force = {
+          x: (Math.random() - 0.5) * forceMagnitude,
+          y: (Math.random() - 0.5) * forceMagnitude,
+        };
+
+        Matter.Body.applyForce(ball, ball.position, force);
+      });
+
+      return () => clearInterval(timer);
+    }, 1000);
+  }, []);
 
   useEffect(() => {
     if (!ref.current) return () => {};
@@ -250,6 +282,7 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
 
       balls.forEach((ball) => {
         const id = ball.label.split("+")[1];
+        const size = Number(ball.label.split("+")[2]);
         const { velocity } = ball;
         const balXlDirection = velocity.x < 0 ? "left" : "right";
         const ballYDirection = velocity.y < 0 ? "top" : "bottom";
@@ -260,7 +293,7 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
         const td = Number(custom?.wall_distance_t) || 0;
         const bd = Number(custom?.wall_distance_b) || 0;
 
-        const ballSize = 100 * (state?.custom?.scale || 1);
+        const ballSize = size * (state?.custom?.scale || 1);
 
         const isOverX =
           balXlDirection === "left"
@@ -278,11 +311,14 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
             x: ball.position.x,
             y: ball.position.y,
             id: slug,
-            data: { src: id, velocity },
+            data: { src: id, velocity, size: ballSize },
             direction: balXlDirection,
           });
 
           sendedBallListRef.current.push(id);
+          Matter.Body.set(ball, {
+            collisionFilter: { category: 0x0001, mask: 0x0000 },
+          });
         }
 
         if (isOverY && !isSended && (!alignment.isTop || !alignment.isBottom)) {
@@ -290,22 +326,25 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
             x: ball.position.x,
             y: ball.position.y,
             id: slug,
-            data: { src: id, velocity },
+            data: { src: id, velocity, size: ballSize },
             direction: ballYDirection,
           });
 
           sendedBallListRef.current.push(id);
+          Matter.Body.set(ball, {
+            collisionFilter: { category: 0x0001, mask: 0x0000 },
+          });
         }
 
         const isOverAll =
           balXlDirection === "left"
-            ? ball.position.x + 100 < 0 - ld
-            : ball.position.x - 100 > w + rd;
+            ? ball.position.x + ballSize < 0 - ld
+            : ball.position.x - ballSize > w + rd;
 
         const isOverAllY =
           ballYDirection === "top"
-            ? ball.position.y + 100 < 0 - td
-            : ball.position.y - 100 > h + bd;
+            ? ball.position.y + ballSize < 0 - td
+            : ball.position.y - ballSize > h + bd;
 
         if (isOverAll || isOverAllY) {
           Matter.Composite.remove(world, ball);
@@ -317,7 +356,22 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
       });
     });
 
+    const timer = setInterval(() => {
+      const balls = world.bodies.filter((body) => body.label.includes("ball"));
+
+      balls.forEach((ball) => {
+        const forceMagnitude = 0.02 * ball.mass;
+        const force = {
+          x: (Math.random() - 0.5) * forceMagnitude,
+          y: (Math.random() - 0.5) * forceMagnitude,
+        };
+
+        Matter.Body.applyForce(ball, ball.position, force);
+      });
+    }, 30000);
+
     return () => {
+      clearInterval(timer);
       if (render.current) {
         Render.stop(render.current);
       }

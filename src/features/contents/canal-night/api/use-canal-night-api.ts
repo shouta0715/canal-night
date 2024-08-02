@@ -28,7 +28,7 @@ export type OverAction = {
   from: Direction;
   to: Direction;
   source: string;
-  data: { src: string; velocity: { x: number; y: number } };
+  data: { src: string; velocity: { x: number; y: number }; size: number };
   action: "over";
 };
 
@@ -89,7 +89,7 @@ const onOver = async ({
   x: number;
   y: number;
   direction: Direction;
-  data: { src: string; velocity: { x: number; y: number } };
+  data: { src: string; velocity: { x: number; y: number }; size: number };
 }) => {
   const res = await fetch(`${API_URL}/canal-night/${id}/over`, {
     method: "POST",
