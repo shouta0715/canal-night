@@ -173,8 +173,9 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
     if (!data) return;
 
     if (data.action === "uploaded") {
+      const bottom = Number(state?.custom?.wall_distance_b) || 0;
       const x = Math.random() * (window.innerWidth - 400) + 200;
-      addBallHandler(x, window.innerHeight, data.id);
+      addBallHandler(x, window.innerHeight + bottom, data.id);
       const time = Date.now();
 
       setFadeX({ x, timestamp: time });
@@ -189,7 +190,7 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
         data.data.size
       );
     }
-  }, [addBallHandler, data]);
+  }, [addBallHandler, data, state?.custom?.wall_distance_b]);
 
   const onResize = useCallback(() => {
     if (!render.current) return;
