@@ -1,6 +1,7 @@
 import Matter, { Events, Render } from "matter-js";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { API_URL } from "@/constant";
 import { Alignment } from "@/features/admin/types";
 import {
   AppState,
@@ -8,7 +9,7 @@ import {
   useMutateOver,
 } from "@/features/contents/canal-night/api/use-canal-night-api";
 
-const IMAGE_URL = "http://localhost:8787/canal-night/images";
+const IMAGE_URL = `${API_URL}/canal-night/images`;
 
 type UseRiverBallProps = {
   data: RiverBallData | null;
@@ -16,7 +17,7 @@ type UseRiverBallProps = {
   alignment: Alignment;
 };
 
-const MAX_BALLS = 10;
+const MAX_BALLS = 100;
 
 export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
   const matterEngine = useRef<Matter.Engine | null>(null);
@@ -168,7 +169,7 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
 
     if (data.action === "uploaded") {
       const x = Math.random() * (window.innerWidth - 400) + 200;
-      addBallHandler(x, window.innerWidth, data.id);
+      addBallHandler(x, window.innerHeight, data.id);
       const time = Date.now();
 
       setFadeX({ x, timestamp: time });
@@ -259,14 +260,16 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
         const td = Number(custom?.wall_distance_t) || 0;
         const bd = Number(custom?.wall_distance_b) || 0;
 
+        const ballSize = 100 * (state?.custom?.scale || 1);
+
         const isOverX =
           balXlDirection === "left"
-            ? ball.position.x - 50 < 0
-            : ball.position.x + 50 > w;
+            ? ball.position.x - ballSize < 0
+            : ball.position.x + ballSize > w;
         const isOverY =
           ballYDirection === "top"
-            ? ball.position.y - 50 < 0
-            : ball.position.y + 50 > h;
+            ? ball.position.y - ballSize < 0
+            : ball.position.y + ballSize > h;
 
         const isSended = sendedBallListRef.current.includes(id);
 

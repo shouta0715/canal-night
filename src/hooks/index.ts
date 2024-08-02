@@ -45,7 +45,17 @@ export const useSocket = <T>({
         width,
         height,
       },
+      reconnectInterval: 0,
+      shouldReconnect: () => true,
       share: true,
+      reconnectAttempts: Infinity,
+      heartbeat: {
+        message: "ping",
+        // 30秒に一回pingを送る
+        interval: 30000,
+        timeout: 600000,
+        returnMessage: "pong",
+      },
     }
   );
 
