@@ -1,9 +1,10 @@
 "use client";
 
-import { ChevronRight, Loader2 } from "lucide-react";
+import { ChevronRight, Loader2, Trash } from "lucide-react";
 import { ReadonlyURLSearchParams } from "next/navigation";
 import React from "react";
 import { FormProvider } from "react-hook-form";
+import { deletePersistentState } from "@/actions/cheange-name";
 import {
   AccordionButton,
   AccordionContent,
@@ -52,6 +53,10 @@ export function PanelItem({
     control,
     methods,
   } = usePanelItem({ session, appName, active, searchParams, pathname });
+
+  const deleteAction = deletePersistentState
+    .bind(null, appName)
+    .bind(null, session.id);
 
   return (
     <AccordionItem
@@ -192,6 +197,20 @@ export function PanelItem({
             })}
           </form>
         </FormProvider>
+
+        <form
+          action={deleteAction}
+          className="mt-4 flex items-center justify-center"
+        >
+          <Button
+            className="px-6 font-semibold"
+            type="submit"
+            variant="destructive"
+          >
+            <Trash className="mr-2" size={16} />
+            永続化データを削除する
+          </Button>
+        </form>
       </AccordionContent>
     </AccordionItem>
   );

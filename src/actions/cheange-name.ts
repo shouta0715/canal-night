@@ -12,3 +12,9 @@ export async function changeNameActions(
     body: formData,
   });
 }
+
+export async function deletePersistentState(appName: string, id: string) {
+  await fetch(`${API_URL}/${appName}/admin/${id}/state`, {
+    method: "DELETE",
+  });
+}
