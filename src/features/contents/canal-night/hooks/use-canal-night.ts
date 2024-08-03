@@ -51,8 +51,8 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
       const base = 150;
       // ボールの大きさは100pxにしたい
 
-      // ボールのサイズを 80 ~ 120 の間でランダムにする
-      const randomBallSize = randomSize || Math.random() * 40 + 80;
+      // ボールのサイズを 140 ~ 160 の間でランダムに決める
+      const randomBallSize = randomSize || Math.random() * 20 + 140;
 
       const ballSize = randomBallSize * (state?.custom?.scale || 1);
       const scale = ballSize / base;
