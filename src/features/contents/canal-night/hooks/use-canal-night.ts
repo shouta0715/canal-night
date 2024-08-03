@@ -39,8 +39,10 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
   const sendedBallListRef = useRef<string[]>([]);
 
   const getRandomVelocity = () => {
-    const randomX = Math.random() * 20 - 10;
-    const randomY = Math.random() * 2 * -1;
+    // xは左にランダムな速度で、yは上にランダムな速度で飛ばす
+    // 範囲は0.01 ~ 1
+    const randomX = -(Math.random() * (1 - 0.01) + 0.01);
+    const randomY = -(Math.random() * (1 - 0.01) + 0.01);
 
     return { x: randomX, y: randomY };
   };
@@ -192,53 +194,6 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
     }
   }, [addBallHandler, data, state?.custom?.wall_distance_b]);
 
-  const onResize = useCallback(() => {
-    if (!render.current) return;
-    if (!matterEngine.current) return;
-
-    render.current.bounds.max.x = window.innerWidth;
-    render.current.bounds.max.y = window.innerHeight;
-    render.current.options.width = window.innerWidth;
-    render.current.options.height = window.innerHeight;
-    render.current.canvas.width = window.innerWidth;
-    render.current.canvas.height = window.innerHeight;
-    Matter.Render.setPixelRatio(render.current, window.devicePixelRatio);
-
-    sizeRef.current = {
-      w: window.innerWidth,
-      h: window.innerHeight,
-    };
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener("resize", onResize);
-
-    return () => {
-      window.removeEventListener("resize", onResize);
-    };
-  }, [onResize]);
-
-  useEffect(() => {
-    const { world } = matterEngine.current || {};
-
-    if (!world) return;
-    const timer = setInterval(() => {
-      const balls = world.bodies.filter((body) => body.label.includes("ball"));
-
-      balls.forEach((ball) => {
-        const forceMagnitude = 0.02 * ball.mass;
-        const force = {
-          x: (Math.random() - 0.5) * forceMagnitude,
-          y: (Math.random() - 0.5) * forceMagnitude,
-        };
-
-        Matter.Body.applyForce(ball, ball.position, force);
-      });
-
-      return () => clearInterval(timer);
-    }, 1000);
-  }, []);
-
   useEffect(() => {
     if (!ref.current) return () => {};
     if (!state) return () => {};
@@ -317,9 +272,6 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
           });
 
           sendedBallListRef.current.push(id);
-          Matter.Body.set(ball, {
-            collisionFilter: { category: 0x0001, mask: 0x0000 },
-          });
         }
 
         if (isOverY && !isSended && (!alignment.isTop || !alignment.isBottom)) {
@@ -332,9 +284,6 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
           });
 
           sendedBallListRef.current.push(id);
-          Matter.Body.set(ball, {
-            collisionFilter: { category: 0x0001, mask: 0x0000 },
-          });
         }
 
         const isOverAll =
@@ -361,7 +310,7 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
       const balls = world.bodies.filter((body) => body.label.includes("ball"));
 
       balls.forEach((ball) => {
-        const forceMagnitude = 0.02 * ball.mass;
+        const forceMagnitude = 0.1 * ball.mass;
         const force = {
           x: (Math.random() - 0.5) * forceMagnitude,
           y: (Math.random() - 0.5) * forceMagnitude,
@@ -369,7 +318,7 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
 
         Matter.Body.applyForce(ball, ball.position, force);
       });
-    }, 30000);
+    }, 60000);
 
     return () => {
       clearInterval(timer);
