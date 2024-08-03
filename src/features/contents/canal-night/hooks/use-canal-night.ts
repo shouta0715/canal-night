@@ -53,8 +53,8 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
       const base = 150;
       // ボールの大きさは100pxにしたい
 
-      // ボールのサイズを 140 ~ 160 の間でランダムに決める
-      const randomBallSize = randomSize || Math.random() * 20 + 140;
+      // ボールのサイズを 150 ~ 180 の間でランダムに決める
+      const randomBallSize = randomSize || Math.random() * 30 + 150;
 
       const ballSize = randomBallSize * (state?.custom?.scale || 1);
       const scale = ballSize / base;
@@ -272,6 +272,10 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
           });
 
           sendedBallListRef.current.push(id);
+
+          Matter.Body.set(ball, {
+            collisionFilter: { category: 0x0001, mask: 0x0000 },
+          });
         }
 
         if (isOverY && !isSended && (!alignment.isTop || !alignment.isBottom)) {
@@ -284,6 +288,10 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
           });
 
           sendedBallListRef.current.push(id);
+
+          Matter.Body.set(ball, {
+            collisionFilter: { category: 0x0001, mask: 0x0000 },
+          });
         }
 
         const isOverAll =
@@ -318,7 +326,7 @@ export function useCanalNight({ data, state, alignment }: UseRiverBallProps) {
 
         Matter.Body.applyForce(ball, ball.position, force);
       });
-    }, 60000);
+    }, 300000);
 
     return () => {
       clearInterval(timer);
